@@ -4,7 +4,7 @@ const logger = require('morgan');
 const express = require('express');
 const cors = require('cors');
 const { DataSource } = require('typeorm');
-const port = process.env.PORT;
+const port = 8000;
 
 const app = express();
 
