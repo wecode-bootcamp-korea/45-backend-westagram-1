@@ -51,6 +51,37 @@ app.post('/users/signup', async function (req, res, next){
     res.status(201).json({message:"userCreated"})
 });
 
+app.post('/users/posts', async function (req, res, next) {
+    const { userEmail, title, content, imageUrl } = req.body;
+
+    const [user] = await dataSource.query(`
+        SELECT id FROM users WHERE email = ?
+    `, [userEmail]);
+
+    if (user) {
+        const user_id = user.id;
+
+        await dataSource.query(`INSERT INTO posts(
+            user_id,
+            title,
+            content,
+            image_url
+            ) VALUES (
+                ?,
+                ?,
+                ?,
+                ?
+            )
+        `, [user_id, title, content, imageUrl]);
+
+        res.status(201).json({ message: "🎉 post has Created!!! 🎉 " });
+    } else {
+        console.log('User not found');
+        res.status(404).json({ message: 'User not found' });
+    }
+});
+
+
 app.listen(port, function(){
     console.log(`server listening on port ${port}`)
 });
