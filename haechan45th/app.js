@@ -4,7 +4,7 @@ const logger = require('morgan');
 const express = require('express');
 const cors = require('cors');
 const { DataSource } = require('typeorm');
-const port = 8000;
+
 
 const app = express();
 
@@ -20,6 +20,8 @@ const dataSource = new DataSource({
 dataSource.initialize()
     .then(() => {
         console.log("Data Source has been initialized!")
+}).catch((err) => {
+  console.log('DataSource Not Initialize :' , err)
 })
 
 app.use(cors());
@@ -30,6 +32,8 @@ app.get('/ping', function(req, res, next){
     res.status(200).json({message: 'pong'})
 });
 
+
+const port = process.env.PORT;
 
 app.listen(port, function(){
     console.log(`server listening on port ${port}`)
