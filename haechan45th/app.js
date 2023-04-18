@@ -25,10 +25,11 @@ app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 
-app.get("/ping", function (req, res, next) {
-  res.status(200).json({ message: "pong" });
-});
+// app.get("/ping", function (req, res, next) {
+//   res.status(200).json({ message: "pong" });
+// });
 
+//Creating New User
 app.post("/users/signup", async function (req, res, next) {
   const { email, password, name, age, phoneNumber } = req.body;
 
@@ -53,6 +54,7 @@ app.post("/users/signup", async function (req, res, next) {
   res.status(201).json({ message: "userCreated" });
 });
 
+// Creating Users Posts
 app.post("/users/posts", async function (req, res, next) {
   const { userEmail, title, content, imageUrl } = req.body;
 
@@ -89,6 +91,8 @@ app.post("/users/posts", async function (req, res, next) {
   }
 });
 
+
+// Getting Users Posts (ALL)
 app.get('/posts', async(req, res) => {
   await dataSource.query(
     `SELECT 
@@ -100,10 +104,35 @@ app.get('/posts', async(req, res) => {
       posts.created_at
       FROM posts 
       INNER JOIN users ON users.id = posts.user_id
-    `, (err, rows) => {
+      `, (err, rows) => {
       res.status(200).json(rows);
     }
   );
+});
+
+// Getting Specified User's Posts
+app.get('/posts/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+  const result = await dataSource.query(
+    `SELECT 
+      users.id,
+      users.name AS Author,
+      posts.title,
+      posts.content,
+      posts.image_url,
+      posts.created_at
+      FROM posts 
+      INNER JOIN users ON users.id = posts.user_id
+      WHERE users.id = ?
+      `, [userId])
+
+    return res.status(200).json({result})
+  } catch(error) {
+    console.log(error)
+    res.status(400).json({message: "some error"})
+  }
 });
 
 app.listen(port, function () {
