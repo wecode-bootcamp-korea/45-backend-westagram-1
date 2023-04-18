@@ -30,6 +30,8 @@ app.use(cors());
 app.use(morgan("combined"));
 app.use(express.json());
 
+app.post("/signup", (req, res) => {})
+
 app.listen(PORT, "127.0.0.1", () => {
   console.log(`🚀🚀🚀 Server Listening to request on 127.0.0.1:${PORT} 🚀🚀🚀`);
 });
