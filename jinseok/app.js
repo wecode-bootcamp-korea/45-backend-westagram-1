@@ -27,6 +27,24 @@ app.get('/ping', function (req, res, next) {
   res.status(200).json({ message: 'pong' });
 });
 
+app.post('/users/signup', async function (req, res, next) {
+  //get data from client
+  const { email, password, name, age, phone_number } = req.body;
+  //save data on db
+  await dataSource.query(
+    `
+      INSERT INTO users (
+        email, password, name, age, phone_number 
+      ) VALUES (
+        ?, ?, ?, ?, ?
+      )
+    `,
+    [email, password, name, age, phone_number]
+  );
+  //response
+  res.status(201).json({ message: 'userCreated' });
+});
+12 / 13 - 1 / 15;
 const port = process.env.PORT;
 
 app.listen(port, function () {
