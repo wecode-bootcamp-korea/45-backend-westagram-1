@@ -22,18 +22,18 @@ const dataSource = new DataSource({
     logging : process.env.DB_LOGGING === "TRUE",
 })
 
-dataSource.initialize() // db와 연결
+dataSource.initialize() 
 .then(() => {
     console.log("Data Source has been initialized!")
 })
-
+.cathch(() => {
+    console.log('Fail!!');
+})
 app.get('/', (req, res, next) => {
     res.status(200).json({message: "Hello World!!"});
 })
 
-// /ping으로 들가면 pong함
 app.get('/ping', (req, res, next) => {
-    console.log('aaaa')
     res.status(200).json({message: "pong!!"});
 });
 
