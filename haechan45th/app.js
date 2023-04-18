@@ -115,7 +115,7 @@ app.get('/posts/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
 
-  const result = await dataSource.query(
+  const gettingUserPosts = await dataSource.query(
     `SELECT 
       users.id,
       users.name AS Author,
@@ -128,10 +128,35 @@ app.get('/posts/:userId', async (req, res) => {
       WHERE users.id = ?
       `, [userId])
 
-    return res.status(200).json({result})
+    return res.status(200).json({gettingUserPosts})
   } catch(error) {
     console.log(error)
     res.status(400).json({message: "some error"})
+  }
+});
+
+// Editing User's Posts API
+app.put('/posts/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { postId } = req.body;
+    const { title, content, imageUrl,} = req.body;
+
+    const updatePosts = await dataSource.query(
+      `UPDATE posts
+      INNER JOIN users ON posts.user_id = users.id
+      SET
+      posts.title = ?,
+      posts.content = ?,
+      posts.image_url = ?
+      WHERE users.id = ? AND posts.id = ?
+      `, [ title, content, imageUrl, userId, postId]
+    )
+
+    res.status(200).json({ message: 'Post updated successfully.' });
+  } catch(error){
+    console.log(error);
+    res.status(400).json({message: "Error has occur in USER EDITING API"})
   }
 });
 
