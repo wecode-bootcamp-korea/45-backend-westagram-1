@@ -24,7 +24,7 @@ const dataSource = new DataSource({
 
 dataSource.initialize() // db와 연결
 .then(() => {
-    console.log("Data Source has been initialized!");
+    console.log("Data Source has been initialized!")
 })
 
 app.get('/', (req, res, next) => {
