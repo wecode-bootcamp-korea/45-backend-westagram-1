@@ -1,11 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const logger = require('morgan');
-const dotenv = require('dotenv');
-
-dotenv.config();
-
+const morgan = require('morgan');
 const { DataSource } = require('typeorm');
+
+const app = express();
 
 const dataSource = new DataSource({
   type: process.env.DB_CONNECTION,
@@ -20,11 +19,9 @@ dataSource.initialize().then(() => {
   console.log('Data Source has been initialized!');
 });
 
-const app = express();
-
 app.use(express.json());
 app.use(cors());
-app.use(logger('dev'));
+app.use(morgan('dev'));
 
 app.get('/ping', function (req, res, next) {
   res.status(200).json({ message: 'pong' });
@@ -33,5 +30,5 @@ app.get('/ping', function (req, res, next) {
 const port = process.env.PORT;
 
 app.listen(port, function () {
-  console.log('server listening on port 3000');
+  console.log(`server listening on port ${port}`);
 });
