@@ -15,9 +15,12 @@ const dataSource = new DataSource({
   database: process.env.DB_DATABASE,
 });
 
-dataSource.initialize().then(() => {
-  console.log('Data Source has been initialized!');
-});
+dataSource
+  .initialize()
+  .then(() => {
+    console.log('Data Source has been initialized!');
+  })
+  .catch((error) => console.log(error));
 
 app.use(express.json());
 app.use(cors());
