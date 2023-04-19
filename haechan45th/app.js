@@ -32,10 +32,8 @@ app.get('/ping', function(req, res, next){
     res.status(200).json({message: 'pong'})
 });
 
-
 const port = process.env.PORT;
 
-// Creating Users Posts
 app.post("/users/posts", async function (req, res, next) {
   const { userEmail, title, content, imageUrl } = req.body;
 
@@ -46,35 +44,32 @@ app.post("/users/posts", async function (req, res, next) {
     [userEmail]
   );
 
-  if (user) {
-    const user_id = user.id;
-
-    await dataSource.query(
-      `INSERT INTO posts(
-            user_id,
-            title,
-            content,
-            image_url
-            ) VALUES (
-              ?,
-              ?,
-              ?,
-              ?
-            )
-        `,
-      [user_id, title, content, imageUrl]
-    );
-
-    res.status(201).json({ message: "🎉 post has Created!!! 🎉 " });
-  } else {
+  if (!user) {
     console.log("User not found");
     res.status(404).json({ message: "User not found" });
-  }
+  } 
+
+  await dataSource.query(
+    `INSERT INTO posts(
+          user_id,
+          title,
+          content,
+          image_url
+          ) VALUES (
+            ?,
+            ?,
+            ?,
+            ?
+          )
+      `,
+    [user.id, title, content, imageUrl]
+  );
+
+  res.status(201).json({ message: "🎉 post has Created!!! 🎉 " });
+
 });
 
-
-// Getting Users Posts (ALL)
-app.get('/posts', async(req, res) => {
+app.get('/posts', async function (req, res) {
   await dataSource.query(
     `SELECT 
       posts.id,
@@ -91,7 +86,6 @@ app.get('/posts', async(req, res) => {
   );
 });
 
-// Getting Specified User's Posts
 app.get('/posts/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
@@ -115,7 +109,6 @@ app.get('/posts/:userId', async (req, res) => {
     res.status(400).json({message: "some error"})
   }
 });
-
 
 app.listen(port, function () {
   console.log(`server listening on port ${port}`);

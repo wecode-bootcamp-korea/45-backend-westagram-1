@@ -1,7 +1,7 @@
 -- migrate:up
 CREATE TABLE posts (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
+    user_id INT NOT NULL,
     title VARCHAR(300) NOT NULL,
     content VARCHAR(500) NOT NULL,
     image_url VARCHAR(255) NOT NULL,
