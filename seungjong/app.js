@@ -42,7 +42,6 @@ app.get('/ping', (req, res, next) => {
 
 app.post('/signUp', async (req, res, next) => {
     const {name, email, password, profile_image } = req.body;
-    console.log(req);
 
     await dataSource.query(
         `INSERT INTO users(
@@ -57,11 +56,6 @@ app.post('/signUp', async (req, res, next) => {
     res.status(201).json({ message: "sucessfully created!" });
 
 })
-
-
-
-
-
 
 app.listen(port, () => {
     console.log(`Sever listiening on ${port}`);
