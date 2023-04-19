@@ -48,24 +48,24 @@ app.post('/users/signup', async function (req, res, next) {
 });
 
 app.post('/posts', async function (req, res, next) {
-  const { text, userId } = req.body;
+  const { context, userId } = req.body;
 
   await dataSource.query(
     `
     INSERT INTO posts (
-      text, user_id
+      context, user_id
     ) VALUES (
       ?, ?
     )
     `,
-    [text, userId]
+    [context, userId]
   );
   res.status(201).json({ message: 'postCreated' });
 });
 
 app.get('/posts', async function (req, res, next) {
   const data = await dataSource.query(
-    `SELECT post_id, text, user_id FROM posts`
+    `SELECT post_id, context, user_id FROM posts`
   );
   res.status(200).json(data);
 });
@@ -82,7 +82,7 @@ app.get('/posts/:id', async function (req, res, next) {
           JSON_ARRAYAGG(
             JSON_OBJECT(
                 "postingId", posts.post_id,
-                "postingContent", posts.text
+                "postingContent", posts.context
             )
           )
         FROM posts
