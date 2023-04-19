@@ -54,7 +54,7 @@ app.post('/signUp', async (req, res, next) => {
 
 // addPost
 
-app.post('/post', async(req, res, next) => {
+app.post('/addPost', async(req, res, next) => {
     const {title, content, user_id} = req.body;
 
     await dataSource.query(
