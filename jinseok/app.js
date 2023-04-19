@@ -30,6 +30,39 @@ app.get('/ping', function (req, res, next) {
   res.status(200).json({ message: 'pong' });
 });
 
+app.post('/posts', async function (req, res, next) {
+  const { text, userId } = req.body;
+
+  await dataSource.query(
+    `
+    INSERT INTO posts (
+      text, user_id
+    ) VALUES (
+      ?, ?
+    )
+    `,
+    [text, userId]
+  );
+  res.status(201).json({ message: 'postCreated' });
+});
+
+app.get('/posts', async function (req, res, next) {
+  const posts = await dataSource.query(
+    `SELECT post_id, text, user_id FROM posts`
+  );
+  res.status(200).json(posts);
+});
+
+app.get('/posts/:id', async function (req, res, next) {
+  const userId = req.params.id;
+  const posts = await dataSource.query(`
+  SELECT post_id, text, user_id FROM posts
+  WHERE user_id = ${userId}
+  `);
+
+  res.status(200).json(posts);
+});
+
 const port = process.env.PORT;
 
 app.listen(port, function () {
