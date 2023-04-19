@@ -52,6 +52,10 @@ app.post('/signUp', async (req, res, next) => {
     res.status(201).json({ message: "sucessfully created!" });
 })
 
+// addPost
+
+
+
 app.listen(port, () => {
     console.log(`Sever listiening on ${port}`);
 });
