@@ -4,7 +4,7 @@ const logger = require("morgan");
 const express = require('express');
 const { DataSource } = require("typeorm");
 const app = express();
-const port = 4000;
+const port = process.env.PORT;
 
 app.use(cors());
 app.use(logger("combined"));
@@ -37,7 +37,7 @@ app.get('/ping', (req, res, next) => {
 });
 
 app.post('/signUp', async (req, res, next) => {
-    const {name, email, password, profile_image } = req.body;
+    const {name, email, password, profileImage } = req.body;
 
     await dataSource.query(
         `INSERT INTO users(
@@ -47,7 +47,7 @@ app.post('/signUp', async (req, res, next) => {
             profile_image
         ) VALUES (?, ?, ?, ?);
         `,
-        [name, email, password, profile_image]
+        [name, email, password, profileImage]
     );
     res.status(201).json({ message: "sucessfully created!" });
 })
