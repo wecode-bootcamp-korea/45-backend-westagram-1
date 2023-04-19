@@ -49,10 +49,25 @@ app.post('/signUp', async (req, res, next) => {
         `,
         [name, email, password, profile_image]
     );
-    res.status(201).json({ message: "sucessfully created!" });
+    res.status(200).json({ message: "sucessfully created!" });
 })
 
 // addPost
+
+app.post('/post', async(req, res, next) => {
+    const {title, content, user_id} = req.body;
+
+    await dataSource.query(
+        `INSERT INTO posts(
+            title,
+            content,
+            user_id
+        ) VALUES (?, ?, ?);
+        `,
+        [title, content, user_id]
+    );
+    res.status(201).json({ message: "postCreated!" });
+});
 
 
 
