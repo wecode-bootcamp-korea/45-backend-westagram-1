@@ -37,7 +37,7 @@ app.get('/ping', (req, res, next) => {
 });
 
 app.post('/signUp', async (req, res, next) => {
-    const {name, email, password, profile_image } = req.body;
+    const {name, email, password, profileImage } = req.body;
 
     await dataSource.query(
         `INSERT INTO users(
@@ -47,7 +47,7 @@ app.post('/signUp', async (req, res, next) => {
             profile_image
         ) VALUES (?, ?, ?, ?);
         `,
-        [name, email, password, profile_image]
+        [name, email, password, profileImage]
     );
     res.status(200).json({ message: "sucessfully created!" });
 })
@@ -55,7 +55,7 @@ app.post('/signUp', async (req, res, next) => {
 // addPost
 
 app.post('/addPost', async(req, res, next) => {
-    const {title, content, user_id} = req.body;
+    const {title, content, userId} = req.body;
 
     await dataSource.query(
         `INSERT INTO posts(
@@ -64,12 +64,10 @@ app.post('/addPost', async(req, res, next) => {
             user_id
         ) VALUES (?, ?, ?);
         `,
-        [title, content, user_id]
+        [title, content, userId]
     );
     res.status(201).json({ message: "postCreated!" });
 });
-
-
 
 app.listen(port, () => {
     console.log(`Sever listiening on ${port}`);
