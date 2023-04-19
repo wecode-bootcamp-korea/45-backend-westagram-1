@@ -19,10 +19,10 @@ const dataSource = new DataSource({
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
-    logging : process.env.DB_LOGGING === "TRUE",
+    logging : process.env.DB_LOGGING,
 })
 
-dataSource.initialize() // db와 연결
+dataSource.initialize() 
 .then(() => {
     console.log("Data Source has been initialized!")
 })
@@ -31,7 +31,7 @@ app.get('/', (req, res, next) => {
     res.status(200).json({message: "Hello World!!"});
 })
 
-// /ping으로 들가면 pong함
+// health check
 app.get('/ping', (req, res, next) => {
     console.log('aaaa')
     res.status(200).json({message: "pong!!"});
