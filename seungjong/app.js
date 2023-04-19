@@ -28,17 +28,13 @@ dataSource.initialize()
         console.log("Fail!!")
     })
 
-
 app.get('/', (req, res, next) => {
-    res.status(200).json({message : "Hello!"});
-});
-
-// health check
-app.get('/ping', (req, res, next) => {
-    res.status(200).json({ message: "pong" });
+    res.status(200).json({message: "Hello World!!"});
 })
 
-// signUp
+app.get('/ping', (req, res, next) => {
+    res.status(200).json({message: "pong!!"});
+});
 
 app.post('/signUp', async (req, res, next) => {
     const {name, email, password, profile_image } = req.body;
@@ -54,7 +50,6 @@ app.post('/signUp', async (req, res, next) => {
         [name, email, password, profile_image]
     );
     res.status(201).json({ message: "sucessfully created!" });
-
 })
 
 app.listen(port, () => {
