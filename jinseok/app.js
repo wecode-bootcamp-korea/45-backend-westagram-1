@@ -86,11 +86,12 @@ app.get('/posts/:id', async function (req, res, next) {
             )
           )
         FROM posts
-        WHERE posts.user_id = ${userId}  
+        WHERE posts.user_id = ?
       ) AS postings
     FROM users
-    WHERE users.id = ${userId}  
-    `
+    WHERE users.id = ?
+    `,
+    [userId, userId]
   );
 
   res.status(200).json(data);
