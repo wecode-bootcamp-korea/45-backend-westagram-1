@@ -62,6 +62,7 @@ app.post('/signUp', async (req, res, next) => {
 
 
 
+
 app.listen(port, () => {
     console.log(`Sever listiening on ${port}`);
 });
