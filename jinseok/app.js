@@ -47,6 +47,45 @@ app.post('/users/signup', async function (req, res, next) {
   res.status(201).json({ message: 'usercreated' });
 });
 
+app.put('/posts/:userid/:postid', async function (req, res, next) {
+  const userId = req.params.userid;
+  const postId = req.params.postid;
+  await dataSource.query(
+    `
+  UPDATE posts SET text="this text is updated"
+  WHERE user_id=${userId} AND post_id=${postId}
+  `
+  );
+
+  res.status(200).json({ message: 'post updated' });
+});
+
+app.delete('/posts/:id', async function (req, res, next) {
+  const id = req.params.id;
+  await dataSource.query(
+    `
+  DELETE FROM posts 
+  WHERE post_id=${id}
+  `
+  );
+  res.status(200).json({ message: 'post deleted' });
+});
+
+app.post('/likes', async function (req, res, next) {
+  const { userId, postsId } = req.body;
+  await dataSource.query(
+    `
+    INSERT INTO likes (
+      user_id, posts_id
+    ) VALUES (
+      ?, ?
+    )
+  `,
+    [userId, postsId]
+  );
+  res.status(201).json({ message: 'likeCreated' });
+});
+
 const port = process.env.PORT;
 
 app.listen(port, function () {
