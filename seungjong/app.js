@@ -4,7 +4,7 @@ const logger = require("morgan");
 const express = require('express');
 const { DataSource } = require("typeorm");
 const app = express();
-const port = PORT;
+const port = process.env.PORT;
 
 app.use(cors());
 app.use(logger("combined"));
@@ -29,15 +29,15 @@ dataSource.initialize()
     })
 
 app.get('/', (req, res, next) => {
-    res.status(200).json({message: "Hello World!!"});
+    res.status(200).json({ message: "Hello World!!" });
 })
 
 app.get('/ping', (req, res, next) => {
-    res.status(200).json({message: "pong!!"});
+    res.status(200).json({ message: "pong!!" });
 });
 
 app.post('/signUp', async (req, res, next) => {
-    const {name, email, password, prfileImage } = req.body;
+    const { name, email, password, prfileImage } = req.body;
 
     await dataSource.query(
         `INSERT INTO users(
@@ -54,19 +54,68 @@ app.post('/signUp', async (req, res, next) => {
 
 // addPost
 
-app.post('/addPost', async(req, res, next) => {
-    const {title, content, userId} = req.body;
+app.post('/addPost', async (req, res, next) => {
+    const { title, content, userId } = req.body;
 
     await dataSource.query(
-        `INSERT INTO posts(
+        `INSERT INTO posts (
             title,
             content,
-            user_id
-        ) VALUES (?, ?, ?);
-        `,
-        [title, content, userId]
+            user_id)
+            VALUES (?, ?, ?);
+            `, [title, content, userId]
     );
     res.status(201).json({ message: "postCreated!" });
+});
+
+// posts 조회 API
+
+app.get('/posts', async (req, res, next) => {
+    const { userId, userProfileImage, postingId, postinImageUrl, postingContent } = req.body;
+
+    await dataSource.query(`
+        SELECT
+        u.id,
+        u.profile_image,
+        p.user_id,
+        p.image_url,
+        p.content
+        FROM
+        users as u
+        INNER JOIN posts as p
+        ON u.id = p.user_id
+        ;
+        `
+        , (err, rows) => {
+            res.status(200).json(rows);
+        })
+})
+
+// 특정 유저가 작성한 게시물 API
+app.get('/post/:userId', async (req, res, next) => {
+    const { userId } = req.params;
+    const posts = await dataSource.query(
+        `SELECT
+            users.id as userId,
+            users.profile_image as userProfileImage,
+            (
+                SELECT
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        "postingId", posts.id,
+                        "postingImageUrl", posts.image_url,
+                        "postingContent", posts.content
+                    )
+                )
+                FROM posts
+                JOIN users ON users.id = posts.user_id
+                WHERE posts.user_id = ?
+            ) as postings
+            FROM users
+            WHERE users.id = ?;`, [userId, userId]
+    )
+    res.status(200).json({message: "성공", userId, data: posts});
+
 });
 
 
