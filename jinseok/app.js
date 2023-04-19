@@ -64,20 +64,36 @@ app.post('/posts', async function (req, res, next) {
 });
 
 app.get('/posts', async function (req, res, next) {
-  const posts = await dataSource.query(
+  const data = await dataSource.query(
     `SELECT post_id, text, user_id FROM posts`
   );
-  res.status(200).json(posts);
+  res.status(200).json(data);
 });
 
 app.get('/posts/:id', async function (req, res, next) {
   const userId = req.params.id;
-  const posts = await dataSource.query(`
-  SELECT post_id, text, user_id FROM posts
-  WHERE user_id = ${userId}
-  `);
+  const data = await dataSource.query(
+    `
+    SELECT 
+      users.id,
+      users.profile_image,
+      (
+        SELECT
+          JSON_ARRAYAGG(
+            JSON_OBJECT(
+                "postingId", posts.post_id,
+                "postingContent", posts.text
+            )
+          )
+        FROM posts
+        WHERE posts.user_id = ${userId}  
+      ) AS postings
+    FROM users
+    WHERE users.id = ${userId}  
+    `
+  );
 
-  res.status(200).json(posts);
+  res.status(200).json(data);
 });
 
 const port = process.env.PORT;
