@@ -1,16 +1,14 @@
 require('dotenv').config();
-
-const cors = require('cors');
-const logger = require('morgan');
+const cors = require("cors");
+const logger = require("morgan");
 const express = require('express');
-const { DataSource } = require('typeorm');
-
+const { DataSource } = require("typeorm");
 const app = express();
+const port = 4000;
 
 app.use(cors());
-app.use(logger('dev'));
+app.use(logger("combined"));
 app.use(express.json());
-
 
 const dataSource = new DataSource({
     type: process.env.DB_CONNECTION,
@@ -19,28 +17,51 @@ const dataSource = new DataSource({
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
-    logging : process.env.DB_LOGGING,
+    logging: process.env.DB_LOGGING
 })
 
-dataSource.initialize() 
-.then(() => {
-    console.log("Data Source has been initialized!")
-})
+dataSource.initialize()
+    .then(() => {
+        console.log("Data Source has benn initializd!")
+    })
+    .catch(() => {
+        console.log("Fail!!")
+    })
+
 
 app.get('/', (req, res, next) => {
-    res.status(200).json({message: "Hello World!!"});
-})
+    res.status(200).json({message : "Hello!"});
+});
 
 // health check
 app.get('/ping', (req, res, next) => {
-    console.log('aaaa')
-    res.status(200).json({message: "pong!!"});
-});
+    res.status(200).json({ message: "pong" });
+})
+
+// signUp
+
+app.post('/signUp', async (req, res, next) => {
+    const {name, email, password, profile_image } = req.body;
+    console.log(req);
+
+    await dataSource.query(
+        `INSERT INTO users(
+            name,
+            email,
+            password,
+            profile_image
+        ) VALUES (?, ?, ?, ?);
+        `,
+        [name, email, password, profile_image]
+    );
+    res.status(201).json({ message: "sucessfully created!" });
+
+})
 
 
-const port = process.env.PORT;
+
+
 
 app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+    console.log(`Sever listiening on ${port}`);
 });
-
