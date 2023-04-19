@@ -36,7 +36,7 @@ app.post('/users/signup', async function (req, res, next) {
   await dataSource.query(
     `
     INSERT INTO users (
-      email, profileImage, password, name, age, phoneNumber 
+      email, profile_image, password, name, age, phone_number 
     ) VALUES (
       ?, ?, ?, ?, ?, ?
     )
