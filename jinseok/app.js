@@ -33,6 +33,10 @@ app.get('/ping', function (req, res, next) {
 app.post('/users/signup', async function (req, res, next) {
   const { email, profileImage, password, name, age, phoneNumber } = req.body;
 
+  if (!name || !email || !password || !age || !phoneNumber) {
+    return res.status(400).json({ message: 'KEY_ERROR' });
+  }
+
   await dataSource.query(
     `
     INSERT INTO users (
@@ -63,14 +67,29 @@ app.post('/posts', async function (req, res, next) {
   res.status(201).json({ message: 'postCreated' });
 });
 
+/*app.get('/posts', async function (req, res, next) {
+  const posts = await dataSource.query(
+    `SELECT id, context, user_id FROM posts`
+  );
+  res.status(200).json({ data: posts });
+});*/
+
 app.get('/posts', async function (req, res, next) {
-  const data = await dataSource.query(`SELECT id, context, user_id FROM posts`);
-  res.status(200).json(data);
+  const posts = await dataSource.query(
+    `SELECT 
+      users.id as userId, 
+      users.name, 
+      posts.id as postId, 
+      posts.context 
+    FROM posts 
+    INNER JOIN users ON users.id = posts.user_id `
+  );
+  res.status(200).json({ data: posts });
 });
 
 app.get('/users/:userId/posts', async function (req, res, next) {
   const userId = req.params.userId;
-  const data = await dataSource.query(
+  const post = await dataSource.query(
     `
     SELECT 
       users.id,
@@ -92,7 +111,7 @@ app.get('/users/:userId/posts', async function (req, res, next) {
     [userId, userId]
   );
 
-  res.status(200).json(data);
+  res.status(200).json({ data: post });
 });
 
 app.put('/users/:userid/posts/:postid', async function (req, res, next) {
@@ -111,14 +130,15 @@ app.put('/users/:userid/posts/:postid', async function (req, res, next) {
   res.status(200).json({ message: 'post updated' });
 });
 
-app.delete('/posts/:postid', async function (req, res, next) {
-  const id = req.params.postid;
+app.delete('/users/:userid/posts/:postid', async function (req, res, next) {
+  const userId = req.params.userid;
+  const postId = req.params.postid;
   await dataSource.query(
     `
   DELETE FROM posts 
-  WHERE id= ?
+  WHERE posts.user_id= ? AND posts.id = ?
   `,
-    [id]
+    [userId, postId]
   );
   res.status(200).json({ message: 'post deleted' });
 });
