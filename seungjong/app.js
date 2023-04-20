@@ -37,11 +37,7 @@ app.get('/ping', (req, res, next) => {
 });
 
 app.post('/signUp', async (req, res, next) => {
-<<<<<<< HEAD
     const { name, email, password, prfileImage } = req.body;
-=======
-    const {name, email, password, profileImage } = req.body;
->>>>>>> main
 
     await dataSource.query(
         `INSERT INTO users(
@@ -51,11 +47,7 @@ app.post('/signUp', async (req, res, next) => {
             profile_image
         ) VALUES (?, ?, ?, ?);
         `,
-<<<<<<< HEAD
         [name, email, password, prfileImage]
-=======
-        [name, email, password, profileImage]
->>>>>>> main
     );
     res.status(200).json({ message: "sucessfully created!" });
 })
