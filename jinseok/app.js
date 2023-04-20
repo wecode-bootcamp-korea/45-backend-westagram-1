@@ -97,7 +97,7 @@ app.get('/users/:userId/posts', async function (req, res, next) {
   res.status(200).json(data);
 });
 
-app.put('/posts/:userid/:postid', async function (req, res, next) {
+app.put('/users/:userid/posts/:postid', async function (req, res, next) {
   const userId = req.params.userid;
   const postId = req.params.postid;
   await dataSource.query(
