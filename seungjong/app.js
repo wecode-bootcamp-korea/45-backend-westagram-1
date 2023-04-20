@@ -92,7 +92,7 @@ app.get('/posts', async (req, res, next) => {
 })
 
 // 특정 유저가 작성한 게시물 API
-app.get('/post/:userId', async (req, res, next) => {
+app.get('/users/:userId/posts', async (req, res, next) => {
     const { userId } = req.params;
     const posts = await dataSource.query(
         `SELECT
