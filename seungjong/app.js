@@ -69,7 +69,7 @@ app.post('/addPost', async (req, res, next) => {
 app.get('/posts', async (req, res, next) => {
     const { userId, userProfileImage, postingId, postinImageUrl, postingContent } = req.body;
 
-    await dataSource.query(`
+    dataSource.query(`
         SELECT
         u.id,
         u.profile_image,
@@ -81,10 +81,9 @@ app.get('/posts', async (req, res, next) => {
         INNER JOIN posts as p
         ON u.id = p.user_id
         ;
-        `
-        , (err, rows) => {
-            res.status(200).json(rows);
-        })
+        `, (err, posts) => {
+            res.status(200).json({ data: posts });
+        })  
 })
 
 app.get('/users/:userId/posts', async (req, res, next) => {
@@ -109,7 +108,7 @@ app.get('/users/:userId/posts', async (req, res, next) => {
             FROM users
             WHERE users.id = ?;`, [userId, userId]
     )
-    res.status(200).json({message: "성공", userId, data: posts});
+    res.status(200).json({message: "성공", data: posts});
 
 });
 
