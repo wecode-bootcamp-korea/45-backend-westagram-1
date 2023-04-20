@@ -70,8 +70,8 @@ app.get('/posts', async function (req, res, next) {
   res.status(200).json(data);
 });
 
-app.get('/posts/:id', async function (req, res, next) {
-  const userId = req.params.id;
+app.get('/users/:userId/posts', async function (req, res, next) {
+  const userId = req.params.userId;
   const data = await dataSource.query(
     `
     SELECT 
