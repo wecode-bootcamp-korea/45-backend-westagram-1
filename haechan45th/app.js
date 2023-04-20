@@ -70,23 +70,26 @@ app.post("/users/posts", async function (req, res, next) {
 });
 
 app.get('/posts', async function (req, res) {
-  await dataSource.query(
-    `SELECT 
-      posts.id,
+  const rows = await dataSource.query(`
+    SELECT 
+      users.id,
       users.name AS Author,
-      posts.title,
-      posts.content,
-      posts.image_url,
-      posts.created_at
-      FROM posts 
-      INNER JOIN users ON users.id = posts.user_id
-      `, (err, rows) => {
-      res.status(200).json(rows);
-    }
-  );
+      JSON_ARRAYAGG(
+        JSON_OBJECT(
+          'title', posts.title,
+          'content', posts.content,
+          'image_url', posts.image_url,
+          'created_at', posts.created_at
+        )
+      ) AS posts
+    FROM posts 
+    INNER JOIN users ON users.id = posts.user_id
+    GROUP BY users.id;
+  `);
+  res.status(200).json(rows);
 });
 
-app.get('/posts/:userId', async (req, res) => {
+app.get('/users/:userId/posts', async (req, res) => {
   try {
     const { userId } = req.params;
 
