@@ -52,8 +52,6 @@ app.post('/signUp', async (req, res, next) => {
     res.status(200).json({ message: "sucessfully created!" });
 })
 
-// addPost
-
 app.post('/addPost', async (req, res, next) => {
     const { title, content, userId } = req.body;
 
@@ -67,8 +65,6 @@ app.post('/addPost', async (req, res, next) => {
     );
     res.status(201).json({ message: "postCreated!" });
 });
-
-// posts 조회 API
 
 app.get('/posts', async (req, res, next) => {
     const { userId, userProfileImage, postingId, postinImageUrl, postingContent } = req.body;
@@ -91,7 +87,6 @@ app.get('/posts', async (req, res, next) => {
         })
 })
 
-// 특정 유저가 작성한 게시물 API
 app.get('/users/:userId/posts', async (req, res, next) => {
     const { userId } = req.params;
     const posts = await dataSource.query(
