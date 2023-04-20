@@ -67,13 +67,6 @@ app.post('/posts', async function (req, res, next) {
   res.status(201).json({ message: 'postCreated' });
 });
 
-/*app.get('/posts', async function (req, res, next) {
-  const posts = await dataSource.query(
-    `SELECT id, context, user_id FROM posts`
-  );
-  res.status(200).json({ data: posts });
-});*/
-
 app.get('/posts', async function (req, res, next) {
   const posts = await dataSource.query(
     `SELECT 
@@ -145,17 +138,22 @@ app.delete('/users/:userid/posts/:postid', async function (req, res, next) {
 
 app.post('/likes', async function (req, res, next) {
   const { userId, postsId } = req.body;
-  await dataSource.query(
-    `
-    INSERT INTO likes (
-      user_id, posts_id
-    ) VALUES (
-      ?, ?
-    )
-  `,
-    [userId, postsId]
-  );
-  res.status(201).json({ message: 'likeCreated' });
+  try {
+    await dataSource.query(
+      `
+      INSERT INTO likes (
+        user_id, posts_id
+      ) VALUES (
+        ?, ?
+      )
+    `,
+      [userId, postsId]
+    );
+    res.status(201).json({ message: 'likeCreated' });
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({ message: 'duplicate data' });
+  }
 });
 
 const port = process.env.PORT;
