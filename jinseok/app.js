@@ -107,11 +107,9 @@ app.get('/users/:userId/posts', async function (req, res, next) {
   res.status(200).json({ data: post });
 });
 
-app.put('/users/:userid/posts/:postid', async function (req, res, next) {
-  const { update } = req.body;
+app.put('/posts', async function (req, res, next) {
+  const { update, userId, postId } = req.body;
 
-  const userId = req.params.userid;
-  const postId = req.params.postid;
   await dataSource.query(
     `
   UPDATE posts SET context= ?, updated_at=CURRENT_TIMESTAMP
