@@ -64,9 +64,7 @@ app.post('/posts', async function (req, res, next) {
 });
 
 app.get('/posts', async function (req, res, next) {
-  const data = await dataSource.query(
-    `SELECT post_id, context, user_id FROM posts`
-  );
+  const data = await dataSource.query(`SELECT id, context, user_id FROM posts`);
   res.status(200).json(data);
 });
 
@@ -81,7 +79,7 @@ app.get('/users/:userId/posts', async function (req, res, next) {
         SELECT
           JSON_ARRAYAGG(
             JSON_OBJECT(
-                "postingId", posts.post_id,
+                "postingId", posts.id,
                 "postingContent", posts.context
             )
           )
@@ -98,14 +96,16 @@ app.get('/users/:userId/posts', async function (req, res, next) {
 });
 
 app.put('/users/:userid/posts/:postid', async function (req, res, next) {
+  const { update } = req.body;
+
   const userId = req.params.userid;
   const postId = req.params.postid;
   await dataSource.query(
     `
-  UPDATE posts SET context="this text is updated!", updated_at=CURRENT_TIMESTAMP
-  WHERE user_id= ? AND post_id= ?;
+  UPDATE posts SET context= ?, updated_at=CURRENT_TIMESTAMP
+  WHERE user_id= ? AND id= ?;
   `,
-    [userId, postId]
+    [update, userId, postId]
   );
 
   res.status(200).json({ message: 'post updated' });
@@ -116,7 +116,7 @@ app.delete('/posts/:postid', async function (req, res, next) {
   await dataSource.query(
     `
   DELETE FROM posts 
-  WHERE post_id= ?
+  WHERE id= ?
   `,
     [id]
   );
