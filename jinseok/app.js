@@ -52,21 +52,23 @@ app.put('/posts/:userid/:postid', async function (req, res, next) {
   const postId = req.params.postid;
   await dataSource.query(
     `
-  UPDATE posts SET text="this text is updated"
-  WHERE user_id=${userId} AND post_id=${postId}
-  `
+  UPDATE posts SET context="this text is updated!", updated_at=CURRENT_TIMESTAMP
+  WHERE user_id= ? AND post_id= ?;
+  `,
+    [userId, postId]
   );
 
   res.status(200).json({ message: 'post updated' });
 });
 
-app.delete('/posts/:id', async function (req, res, next) {
-  const id = req.params.id;
+app.delete('/posts/:postid', async function (req, res, next) {
+  const id = req.params.postid;
   await dataSource.query(
     `
   DELETE FROM posts 
-  WHERE post_id=${id}
-  `
+  WHERE post_id= ?
+  `,
+    [id]
   );
   res.status(200).json({ message: 'post deleted' });
 });
