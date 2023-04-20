@@ -1,16 +1,14 @@
 require('dotenv').config();
-
-const cors = require('cors');
-const logger = require('morgan');
+const cors = require("cors");
+const logger = require("morgan");
 const express = require('express');
-const { DataSource } = require('typeorm');
-
+const { DataSource } = require("typeorm");
 const app = express();
+const port = process.env.PORT;
 
 app.use(cors());
-app.use(logger('dev'));
+app.use(logger("combined"));
 app.use(express.json());
-
 
 const dataSource = new DataSource({
     type: process.env.DB_CONNECTION,
@@ -19,16 +17,17 @@ const dataSource = new DataSource({
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
-    logging : process.env.DB_LOGGING,
+    logging: process.env.DB_LOGGING
 })
 
-dataSource.initialize() 
-.then(() => {
-    console.log("Data Source has been initialized!")
-})
-.cathch(() => {
-    console.log('Fail!!');
-})
+dataSource.initialize()
+    .then(() => {
+        console.log("Data Source has benn initializd!")
+    })
+    .catch(() => {
+        console.log("Fail!!")
+    })
+
 app.get('/', (req, res, next) => {
     res.status(200).json({message: "Hello World!!"});
 })
@@ -37,10 +36,22 @@ app.get('/ping', (req, res, next) => {
     res.status(200).json({message: "pong!!"});
 });
 
+app.post('/signUp', async (req, res, next) => {
+    const {name, email, password, profileImage } = req.body;
 
-const port = process.env.PORT;
+    await dataSource.query(
+        `INSERT INTO users(
+            name,
+            email,
+            password,
+            profile_image
+        ) VALUES (?, ?, ?, ?);
+        `,
+        [name, email, password, profileImage]
+    );
+    res.status(201).json({ message: "sucessfully created!" });
+})
 
 app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+    console.log(`Sever listiening on ${port}`);
 });
-
