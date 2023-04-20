@@ -69,7 +69,7 @@ app.post('/addPost', async (req, res, next) => {
 app.get('/posts', async (req, res, next) => {
     const { userId, userProfileImage, postingId, postinImageUrl, postingContent } = req.body;
 
-    dataSource.query(`
+    await const posts = dataSource.query(`
         SELECT
         u.id,
         u.profile_image,
@@ -81,9 +81,8 @@ app.get('/posts', async (req, res, next) => {
         INNER JOIN posts as p
         ON u.id = p.user_id
         ;
-        `, (err, posts) => {
-            res.status(200).json({ data: posts });
-        })  
+        `);
+        res.status(200).json({data: posts});  
 })
 
 app.get('/users/:userId/posts', async (req, res, next) => {
