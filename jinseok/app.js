@@ -4,8 +4,11 @@ const cors = require('cors');
 const morgan = require('morgan');
 const { DataSource } = require('typeorm');
 
+const routes = require('./routes');
+
 const app = express();
 
+/*
 const dataSource = new DataSource({
   type: process.env.DB_CONNECTION,
   host: process.env.DB_HOST,
@@ -21,15 +24,18 @@ dataSource
     console.log('Data Source has been initialized!');
   })
   .catch((error) => console.log(error));
+*/
 
 app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'));
+app.use(routes);
 
 app.get('/ping', function (req, res, next) {
   res.status(200).json({ message: 'pong' });
 });
 
+/*
 app.post('/users/signup', async function (req, res, next) {
   const { email, profileImage, password, name, age, phoneNumber } = req.body;
 
@@ -96,9 +102,16 @@ app.get('/users/:userId/posts', async function (req, res, next) {
 
   res.status(200).json(data);
 });
+*/
 
 const port = process.env.PORT;
 
-app.listen(port, function () {
-  console.log(`server listening on port ${port}`);
-});
+const start = async () => {
+  try {
+    app.listen(port, () => console.log(`Server is listening on ${port}`));
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+start();
