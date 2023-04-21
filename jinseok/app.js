@@ -39,6 +39,10 @@ app.get('/ping', function (req, res, next) {
 app.post('/users/signup', async function (req, res, next) {
   const { email, profileImage, password, name, age, phoneNumber } = req.body;
 
+  if (!name || !email || !password || !age || !phoneNumber) {
+    return res.status(400).json({ message: 'KEY_ERROR' });
+  }
+
   await dataSource.query(
     `
     INSERT INTO users (
@@ -70,15 +74,21 @@ app.post('/posts', async function (req, res, next) {
 });
 
 app.get('/posts', async function (req, res, next) {
-  const data = await dataSource.query(
-    `SELECT post_id, context, user_id FROM posts`
+  const posts = await dataSource.query(
+    `SELECT 
+      users.id as userId, 
+      users.name, 
+      posts.id as postId, 
+      posts.context 
+    FROM posts
+    INNER JOIN users ON users.id = posts.user_id `
   );
-  res.status(200).json(data);
+  res.status(200).json({ data: posts });
 });
 
 app.get('/users/:userId/posts', async function (req, res, next) {
   const userId = req.params.userId;
-  const data = await dataSource.query(
+  const post = await dataSource.query(
     `
     SELECT 
       users.id,
@@ -87,7 +97,7 @@ app.get('/users/:userId/posts', async function (req, res, next) {
         SELECT
           JSON_ARRAYAGG(
             JSON_OBJECT(
-                "postingId", posts.post_id,
+                "postingId", posts.id,
                 "postingContent", posts.context
             )
           )
@@ -100,7 +110,72 @@ app.get('/users/:userId/posts', async function (req, res, next) {
     [userId, userId]
   );
 
-  res.status(200).json(data);
+  res.status(200).json({ data: post });
+});
+
+app.put('/posts', async function (req, res, next) {
+  const { update, userId, postId } = req.body;
+
+  await dataSource.query(
+    `
+  UPDATE posts SET context= ?
+  WHERE user_id= ? AND id= ?;
+  `,
+    [update, userId, postId]
+  );
+
+  res.status(200).json({ message: 'post updated' });
+});
+
+app.delete('/users/:userid/posts/:postid', async function (req, res, next) {
+  const { userId, postId } = req.params;
+  await dataSource.query(
+    `
+  DELETE FROM posts 
+  WHERE posts.user_id= ? AND posts.id = ?
+  `,
+    [userId, postId]
+  );
+  res.status(200).json({ message: 'post deleted' });
+});
+
+app.post('/likes', async function (req, res, next) {
+  const { userId, postsId } = req.body;
+
+  const like = await dataSource.query(
+    `SELECT user_id, posts_id 
+    FROM likes 
+    WHERE user_id = ? AND posts_id = ?`,
+    [userId, postsId]
+  );
+
+  if (!(JSON.stringify(like) === '[]')) {
+    await dataSource.query(
+      `
+    DELETE FROM likes 
+    WHERE user_id= ? AND posts_id = ?
+    `,
+      [userId, postsId]
+    );
+    res.status(200).json({ message: 'like deleted' });
+  } else {
+    try {
+      await dataSource.query(
+        `
+      INSERT INTO likes (
+        user_id, posts_id
+      ) VALUES (
+        ?, ?
+      )
+    `,
+        [userId, postsId]
+      );
+      res.status(201).json({ message: 'like created' });
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ message: 'error' });
+    }
+  }
 });
 */
 

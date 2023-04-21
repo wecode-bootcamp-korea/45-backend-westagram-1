@@ -29,15 +29,15 @@ dataSource.initialize()
     })
 
 app.get('/', (req, res, next) => {
-    res.status(200).json({message: "Hello World!!"});
+    res.status(200).json({ message: "Hello World!!" });
 })
 
 app.get('/ping', (req, res, next) => {
-    res.status(200).json({message: "pong!!"});
+    res.status(200).json({ message: "pong!!" });
 });
 
 app.post('/signUp', async (req, res, next) => {
-    const {name, email, password, profileImage } = req.body;
+    const { name, email, password, prfileImage } = req.body;
 
     await dataSource.query(
         `INSERT INTO users(
@@ -47,10 +47,71 @@ app.post('/signUp', async (req, res, next) => {
             profile_image
         ) VALUES (?, ?, ?, ?);
         `,
-        [name, email, password, profileImage]
+        [name, email, password, prfileImage]
     );
-    res.status(201).json({ message: "sucessfully created!" });
+    res.status(200).json({ message: "sucessfully created!" });
 })
+
+app.post('/addPost', async (req, res, next) => {
+    const { title, content, userId } = req.body;
+
+    await dataSource.query(
+        `INSERT INTO posts (
+            title,
+            content,
+            user_id)
+            VALUES (?, ?, ?);
+            `, [title, content, userId]
+    );
+    res.status(201).json({ message: "postCreated!" });
+});
+
+app.get('/posts', async (req, res, next) => {
+    const { userId, userProfileImage, postingId, postinImageUrl, postingContent } = req.body;
+
+    await const posts = dataSource.query(`
+        SELECT
+        u.id,
+        u.profile_image,
+        p.user_id,
+        p.image_url,
+        p.content
+        FROM
+        users as u
+        INNER JOIN posts as p
+        ON u.id = p.user_id
+        ;
+        `);
+        res.status(200).json({data: posts});  
+})
+
+app.get('/users/:userId/posts', async (req, res, next) => {
+    const { userId } = req.params;
+    const posts = await dataSource.query(
+        `SELECT
+            users.id as userId,
+            users.profile_image as userProfileImage,
+            (
+                SELECT
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        "postingId", posts.id,
+                        "postingImageUrl", posts.image_url,
+                        "postingContent", posts.content
+                    )
+                )
+                FROM posts
+                JOIN users ON users.id = posts.user_id
+                WHERE posts.user_id = ?
+            ) as postings
+            FROM users
+            WHERE users.id = ?;`, [userId, userId]
+    )
+    res.status(200).json({message: "성공", data: posts});
+
+});
+
+
 
 app.listen(port, () => {
     console.log(`Sever listiening on ${port}`);
