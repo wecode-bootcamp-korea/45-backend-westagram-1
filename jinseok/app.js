@@ -74,7 +74,7 @@ app.get('/posts', async function (req, res, next) {
       users.name, 
       posts.id as postId, 
       posts.context 
-    FROM posts 
+    FROM posts
     INNER JOIN users ON users.id = posts.user_id `
   );
   res.status(200).json({ data: posts });
@@ -112,7 +112,7 @@ app.put('/posts', async function (req, res, next) {
 
   await dataSource.query(
     `
-  UPDATE posts SET context= ?, updated_at=CURRENT_TIMESTAMP
+  UPDATE posts SET context= ?
   WHERE user_id= ? AND id= ?;
   `,
     [update, userId, postId]
@@ -122,8 +122,7 @@ app.put('/posts', async function (req, res, next) {
 });
 
 app.delete('/users/:userid/posts/:postid', async function (req, res, next) {
-  const userId = req.params.userid;
-  const postId = req.params.postid;
+  const { userId, postId } = req.params;
   await dataSource.query(
     `
   DELETE FROM posts 
@@ -136,21 +135,40 @@ app.delete('/users/:userid/posts/:postid', async function (req, res, next) {
 
 app.post('/likes', async function (req, res, next) {
   const { userId, postsId } = req.body;
-  try {
+
+  const like = await dataSource.query(
+    `SELECT user_id, posts_id 
+    FROM likes 
+    WHERE user_id = ? AND posts_id = ?`,
+    [userId, postsId]
+  );
+
+  if (!(JSON.stringify(like) === '[]')) {
     await dataSource.query(
       `
+    DELETE FROM likes 
+    WHERE user_id= ? AND posts_id = ?
+    `,
+      [userId, postsId]
+    );
+    res.status(200).json({ message: 'like deleted' });
+  } else {
+    try {
+      await dataSource.query(
+        `
       INSERT INTO likes (
         user_id, posts_id
       ) VALUES (
         ?, ?
       )
     `,
-      [userId, postsId]
-    );
-    res.status(201).json({ message: 'likeCreated' });
-  } catch (e) {
-    console.log(e);
-    res.status(400).json({ message: 'duplicate data' });
+        [userId, postsId]
+      );
+      res.status(201).json({ message: 'like created' });
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ message: 'error' });
+    }
   }
 });
 
