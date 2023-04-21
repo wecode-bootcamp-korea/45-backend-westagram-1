@@ -8,7 +8,12 @@ const getAllPosts = async () => {
   return await postDao.getAllPosts();
 };
 
+const getSpecificPost = async (userId) => {
+  return await postDao.getSpecificPost(userId);
+};
+
 module.exports = {
   createPost,
   getAllPosts,
+  getSpecificPost,
 };

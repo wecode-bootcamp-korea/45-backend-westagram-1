@@ -54,7 +54,36 @@ const getAllPosts = async () => {
   }
 };
 
+const getSpecificPost = async (userId) => {
+  try {
+    return await dataSource.query(
+      `
+            SELECT 
+              users.id,
+              users.profile_image,
+              (
+                SELECT
+                  JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        "postingId", posts.id,
+                        "postingContent", posts.context
+                    )
+                  )
+                FROM posts
+                WHERE posts.user_id = ?
+              ) AS postings
+            FROM users
+            WHERE users.id = ?
+            `,
+      [userId, userId]
+    );
+  } catch (err) {
+    console.log(`error: ${err}`);
+  }
+};
+
 module.exports = {
   createPost,
   getAllPosts,
+  getSpecificPost,
 };
