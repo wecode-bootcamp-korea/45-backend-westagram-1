@@ -4,7 +4,7 @@ const signUp = async (req, res) => {
   try {
     const { email, profileImage, password, name, age, phoneNumber } = req.body;
 
-    if (!email || !profileImage || !password || !name || !age || !phoneNumber) {
+    if (!email || !password || !name || !age || !phoneNumber) {
       return res.status(400).json({ message: 'KEY_ERROR' });
     }
 
