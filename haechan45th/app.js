@@ -181,11 +181,12 @@ app.put('/posts/:userId', async (req, res) => {
 app.delete('/posts/:postsId', async (req, res) => {
   try {
     const { postsId } = req.params;
+    const { userId } = req.params;
 
     const deletePosts = await dataSource.query(
       `DELETE FROM posts
-      WHERE posts.id = ${postsId}
-      `
+      WHERE posts.id = ? AND posts.user_id = ?
+      `, [postsId, userId]
     )
 
     res.status(200).json({ message: 'Post DELETED successfully.' });
@@ -197,29 +198,34 @@ app.delete('/posts/:postsId', async (req, res) => {
 
 app.post('/users/likes', async (req, res) => {
   try {
-    const { user_id, postId } = req.body;
+    const { userId, postId } = req.body;
 
-    const likePosts = await dataSource.query(
-      `INSERT INTO likes(
-        user_id,
-        post_id
-        ) VALUES (
-          ?,
-          ?
-        )
-    `,
-      [user_id, postId]
-    )
+    const [existingLike] = await dataSource.query(
+      `SELECT * FROM likes WHERE user_id = ? AND post_id = ?`,
+      [userId, postId]
+    );
 
-    res.status(200).json({ message: 'Post LIKED ❤️ successfully.' });
+    if (existingLike) {
+      await dataSource.query(
+        `DELETE FROM likes WHERE user_id = ? AND post_id = ?`,
+        [userId, postId]
+      );
+      res.status(200).json({ message: 'Post UNLIKED successfully.' });
+    } else {
+      await dataSource.query(
+        `INSERT INTO likes (user_id, post_id) VALUES (?, ?)`,
+        [userId, postId]
+      );
+      res.status(200).json({ message: 'Post LIKED ❤️ successfully.' });
+    }
   } catch (error) {
     console.log(error);
-    res.status(400).json({ message: "Error has occur in LIKE USER POSTS" })
+    res.status(400).json({ message: "Error has occurred while liking/unliking the post." })
   }
 });
 
 const port = process.env.PORT;
 
 app.listen(port, function () {
-  console.log(`server listening on port ${port}`);
+  console.log(`server listening on port ${port} `);
 });

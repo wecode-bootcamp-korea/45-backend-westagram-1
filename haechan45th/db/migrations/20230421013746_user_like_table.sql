@@ -5,8 +5,8 @@ CREATE TABLE likes (
     post_id INT NOT NULL,
     UNIQUE KEY unique_user_post (user_id, post_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT likes_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id),
-    CONSTRAINT likes_post_id_fkey FOREIGN KEY (post_id) REFERENCES posts(id)
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (post_id) REFERENCES posts(id)
 );
 
 -- migrate:down
