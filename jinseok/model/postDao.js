@@ -82,8 +82,23 @@ const getSpecificPost = async (userId) => {
   }
 };
 
+const updatePost = async (update, userId, postId) => {
+  try {
+    return await dataSource.query(
+      `
+      UPDATE posts SET context= ?
+      WHERE user_id= ? AND id= ?;
+      `,
+      [update, userId, postId]
+    );
+  } catch (err) {
+    console.log(`error: ${err}`);
+  }
+};
+
 module.exports = {
   createPost,
   getAllPosts,
   getSpecificPost,
+  updatePost,
 };

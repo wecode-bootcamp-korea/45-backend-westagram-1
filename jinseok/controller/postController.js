@@ -36,8 +36,23 @@ const getSpecificPost = async (req, res) => {
     return res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
+
+const updatePost = async (req, res) => {
+  try {
+    const { update, userId, postId } = req.body;
+    if (!update || !userId || !postId) {
+      return res.status(400).json({ message: 'KEY_ERROR' });
+    }
+    await postService.updatePost(update, userId, postId);
+    return res.status(200).json({ message: 'post updated' });
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ message: err.message });
+  }
+};
+
 module.exports = {
   createPost,
   getAllPosts,
   getSpecificPost,
+  updatePost,
 };
