@@ -1,6 +1,6 @@
 const likeService = require('../service/likeService');
 
-const createLike = async (req, res) => {
+const createDeleteLike = async (req, res) => {
   try {
     const { userId, postId } = req.body;
 
@@ -8,9 +8,9 @@ const createLike = async (req, res) => {
       return res.status(400).json({ message: 'KEY_ERROR' });
     }
 
-    await likeService.createLike(userId, postId);
+    const result = await likeService.createDeleteLike(userId, postId);
     return res.status(201).json({
-      message: 'created like',
+      message: result,
     });
   } catch (err) {
     console.log(err);
@@ -19,5 +19,5 @@ const createLike = async (req, res) => {
 };
 
 module.exports = {
-  createLike,
+  createDeleteLike,
 };
