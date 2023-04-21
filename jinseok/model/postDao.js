@@ -96,9 +96,24 @@ const updatePost = async (update, userId, postId) => {
   }
 };
 
+const deletePost = async (userId, postId) => {
+  try {
+    return await dataSource.query(
+      `
+          DELETE FROM posts 
+          WHERE posts.user_id= ? AND posts.id = ?
+          `,
+      [userId, postId]
+    );
+  } catch (err) {
+    console.log(`error: ${err}`);
+  }
+};
+
 module.exports = {
   createPost,
   getAllPosts,
   getSpecificPost,
   updatePost,
+  deletePost,
 };

@@ -16,23 +16,14 @@ const updatePost = async (update, userId, postId) => {
   return await postDao.updatePost(update, userId, postId);
 };
 
+const deletePost = async (userId, postId) => {
+  return await postDao.deletePost(userId, postId);
+};
+
 module.exports = {
   createPost,
   getAllPosts,
   getSpecificPost,
   updatePost,
+  deletePost,
 };
-
-/*app.put('/posts', async function (req, res, next) {
-  const { update, userId, postId } = req.body;
-
-  await dataSource.query(
-    `
-  UPDATE posts SET context= ?
-  WHERE user_id= ? AND id= ?;
-  `,
-    [update, userId, postId]
-  );
-
-  res.status(200).json({ message: 'post updated' });
-});*/
