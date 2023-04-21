@@ -86,7 +86,7 @@ app.get('/posts', async function (req, res, next) {
   res.status(200).json({ data: posts });
 });
 
-app.get('/users/:userId/posts', async function (req, res, next) {
+app.get('posts/users/:userId', async function (req, res, next) {
   const userId = req.params.userId;
   const post = await dataSource.query(
     `
@@ -127,7 +127,7 @@ app.put('/posts', async function (req, res, next) {
   res.status(200).json({ message: 'post updated' });
 });
 
-app.delete('/users/:userid/posts/:postid', async function (req, res, next) {
+app.delete('/posts/:postid/users/:userid', async function (req, res, next) {
   const { userId, postId } = req.params;
   await dataSource.query(
     `

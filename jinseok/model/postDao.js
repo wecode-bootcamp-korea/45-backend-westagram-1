@@ -38,6 +38,23 @@ const createPost = async (context, userId) => {
   }
 };
 
+const getAllPosts = async () => {
+  try {
+    return await dataSource.query(
+      `SELECT 
+            users.id as userId, 
+            users.name, 
+            posts.id as postId, 
+            posts.context 
+        FROM posts
+        INNER JOIN users ON users.id = posts.user_id `
+    );
+  } catch (err) {
+    console.log(`error: ${err}`);
+  }
+};
+
 module.exports = {
   createPost,
+  getAllPosts,
 };
