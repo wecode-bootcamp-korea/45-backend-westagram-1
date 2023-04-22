@@ -1,5 +1,15 @@
 const userDao = require('../models/userDao')
 
+const getAllUsers = async () => {
+    try {
+        const users = await userDao.getAllUsers();
+        return users;
+    } catch (err) {
+        console.log(err);
+        throw new Error("Error occured in getting All Users /userService");
+    }
+}
+
 const signUp = async (name, email, password, profileImage) => {
     const pwValidation = new RegExp(
         '^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,20})'
@@ -21,5 +31,5 @@ const signUp = async (name, email, password, profileImage) => {
 
 
 module.exports = {
-    signUp
+    signUp, getAllUsers
 }

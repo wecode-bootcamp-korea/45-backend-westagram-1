@@ -1,5 +1,25 @@
 const { dataSource } = require("./dataSource")
 
+const getAllUsers = async () => {
+    try {
+        const rows = await dataSource.query(
+            `SELECT
+                users.id,
+                users.name,
+                users.email,
+                users.password,
+                users.profile_image,
+                users.created_at
+            FROM users
+            `
+        );
+        return rows;
+    } catch (err) {
+        console.log(err);
+        throw new Error("Error occured in getting Userdatas / userDAO")
+    }
+}
+
 const getUserId = async (userId) => {
     try {
         const [getUserId] = await dataSource.query(
@@ -27,6 +47,8 @@ const createUser = async (name, email, password, profileImage) => {
 		`,
             [name, email, password, profileImage]
         );
+
+        return;
     } catch (err) {
         const error = new Error("INVALID_DATA_INPUT");
         error.statusCode = 500;
@@ -36,5 +58,5 @@ const createUser = async (name, email, password, profileImage) => {
 
 
 module.exports = {
-    createUser, getUserId
+    createUser, getUserId, getAllUsers
 }
