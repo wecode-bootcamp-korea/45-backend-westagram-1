@@ -1,7 +1,7 @@
 // service/userService.js
 
 const userDao = require('../models/userDao');
-const signUp = async (name, email, password, profileImage) => {
+const signUp = async (name, email, password, profileImg) => {
     // password validation using REGEX
     const pwValidation = new RegExp(
         '^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,20})'
@@ -15,7 +15,7 @@ const signUp = async (name, email, password, profileImage) => {
         name,
         email,
         password,
-        profileImage
+        profileImg
     );
 
     return createUser;

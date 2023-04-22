@@ -21,7 +21,7 @@ dataSource.initialize()
         dataSource.destroy();
 });
 
-const createUser = async ( name, email, password, profileImage ) => {
+const createUser = async ( name, email, password, profileImg ) => {
 	try {
 		return await dataSource.query(
 		`INSERT INTO users(
@@ -31,7 +31,7 @@ const createUser = async ( name, email, password, profileImage ) => {
 		    profile_image
 		) VALUES (?, ?, ?, ?);
 		`,
-		[ name, email, password, profileImage ]
+		[ name, email, password, profileImg ]
 	  );
 	} catch (err) {
 		const error = new Error('INVALID_DATA_INPUT');
