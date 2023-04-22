@@ -3,7 +3,7 @@ const userService = require('../services/userService');
 const signUp = async (req, res) => {
     try {
         const {name, email, password, profileImg} = req.body;
-        console.log(name, email, password, profileImg);
+        // console.log(name, email, password, profileImg);
 
         if ( !name || !email || !password ) {
             return res.status(400).json({ message: "Key_Error"});

@@ -186,6 +186,7 @@ const dotenv =require("dotenv")
 dotenv.config();
 
 const routes = require("./routes");
+const dataSource = require('./models/Dao');
 
 const app = express();
 
