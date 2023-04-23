@@ -124,37 +124,31 @@ app.patch('/users/:userId/:postId', async (req, res, next) => {
         `, [content, postId]
         )
     
-    const result = await dataSource.query(`
+    const [result] = await dataSource.query(`
         SELECT
-        u.id,
-        u.name,
-        p.id,
-        p.title,
-        p.content
+        u.id AS userId,
+        u.name AS userName,
+        p.id AS postingId,
+        p.title AS postingTitle,
+        p.content AS postingContent
         FROM users as u
         JOIN posts as p
         ON u.id = p.user_id
         WHERE p.id = ?;
     `, [postId]);
 
-    res.status(200).json({ data: {
-        userId : userId,
-        userName: result[0].name,
-        postingId : postId,
-        postingTitle: result[0].title,
-        postingContent: content
-    } });
+    res.status(200).json({ data: result});
 })
 
 
-app.delete('/users/:userId/:postId/postDelete', async(req, res, next) => {
+app.delete('/users/:userId/posts/:postId', async(req, res, next) => {
     const {userId, postId} = req.params;
     await dataSource.query(`
         DELETE FROM posts as p
         WHERE p.id = ?
         AND p.user_id = ?;
     `, [postId, userId]);
-    res.status(200).json({message: "postingDeleted"});
+    res.status(204).send();
 });
 
 
