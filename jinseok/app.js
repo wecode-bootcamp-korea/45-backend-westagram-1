@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const { DataSource } = require('typeorm');
+const db = require('./model/dataSource.js');
 
 const routes = require('./routes');
 
@@ -26,5 +26,15 @@ const start = async () => {
     console.error(err);
   }
 };
+
+db.dataSource
+  .initialize()
+  .then(() => {
+    console.log('Data Source has been initialized!');
+  })
+  .catch((err) => {
+    console.error('Error occurred during Data Source initialization', err);
+    dataSource.destroy();
+  });
 
 start();

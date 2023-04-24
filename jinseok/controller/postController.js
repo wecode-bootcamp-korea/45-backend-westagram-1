@@ -19,8 +19,13 @@ const createPost = async (req, res) => {
 };
 
 const getAllPosts = async (req, res) => {
-  const posts = await postService.getAllPosts();
-  return res.status(200).json({ posts });
+  try {
+    const posts = await postService.getAllPosts();
+    return res.status(200).json({ posts });
+  } catch (err) {
+    console.log(err);
+    return res.status(err.statusCode || 500).json({ message: err.message });
+  }
 };
 
 const getSpecificPost = async (req, res) => {
@@ -44,7 +49,7 @@ const updatePost = async (req, res) => {
       return res.status(400).json({ message: 'KEY_ERROR' });
     }
     await postService.updatePost(update, userId, postId);
-    return res.status(200).json({ message: 'post updated' });
+    return res.status(201).json({ message: 'post updated' });
   } catch (err) {
     return res.status(err.statusCode || 500).json({ message: err.message });
   }
