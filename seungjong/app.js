@@ -82,7 +82,7 @@ app.get('/posts', async (req, res, next) => {
         ON u.id = p.user_id
         ;
         `);
-        res.status(200).json({data: posts});  
+    res.status(200).json({ data: posts });
 })
 
 app.get('/users/:userId/posts', async (req, res, next) => {
@@ -107,7 +107,7 @@ app.get('/users/:userId/posts', async (req, res, next) => {
             FROM users
             WHERE users.id = ?;`, [userId, userId]
     )
-    res.status(200).json({message: "성공", data: posts});
+    res.status(200).json({ message: "성공", data: posts });
 
 });
 
@@ -122,8 +122,8 @@ app.patch('/users/:userId/:postId', async (req, res, next) => {
         content = ?
         WHERE id = ?     
         `, [content, postId]
-        )
-    
+    )
+
     const [result] = await dataSource.query(`
         SELECT
         u.id AS userId,
@@ -137,12 +137,12 @@ app.patch('/users/:userId/:postId', async (req, res, next) => {
         WHERE p.id = ?;
     `, [postId]);
 
-    res.status(200).json({ data: result});
+    res.status(200).json({ data: result });
 })
 
 
-app.delete('/users/:userId/posts/:postId', async(req, res, next) => {
-    const {userId, postId} = req.params;
+app.delete('/users/:userId/posts/:postId', async (req, res, next) => {
+    const { userId, postId } = req.params;
     await dataSource.query(`
         DELETE FROM posts as p
         WHERE p.id = ?
@@ -152,17 +152,33 @@ app.delete('/users/:userId/posts/:postId', async(req, res, next) => {
 });
 
 
-app.post('/likes/:userId/:postId', async(req, res, next) => {
-    const {userId, postId} = req.params;
+app.post('/likes/:userId/:postId', async (req, res, next) => {
+    const { userId, postId } = req.params;
 
-    await dataSource.query(`
-    INSERT into likes (
-        user_id,
-        post_id
-        )
-        VALUES (?, ?);
-    `,[userId, postId])
-    res.status(200).json({ message: "likeCreated!"});
+    const [result] = await dataSource.query(`
+      SELECT EXISTS
+      (SELECT id
+      FROM likes
+      WHERE user_id = ? AND post_id = ?) as isLiked;
+    `, [userId, postId])
+    console.log(!!parseInt(result.isLiked))
+    if (!!parseInt(result.isLiked)) {
+        await dataSource.query(`
+            DELETE FROM likes
+            WHERE user_id = ? AND post_id = ?;
+        `, [userId, postId]);
+        res.status(200).json({ message: "deleteLiked!" });
+    } else {
+        await dataSource.query(`
+            INSERT INTO likes(
+                user_id,
+                post_id
+            ) VALUES (?, ?);
+        `, [userId, postId]);
+        res.status(200).json({ message: "likeCreated!" });
+    }
+
+
 })
 
 
