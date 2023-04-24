@@ -161,14 +161,32 @@
 // app.post('/likes/:userId/:postId', async(req, res, next) => {
 //     const {userId, postId} = req.params;
 
-//     await dataSource.query(`
-//     INSERT into likes (
-//         user_id,
-//         post_id
-//         )
-//         VALUES (?, ?);
-//     `,[userId, postId])
-//     res.status(200).json({ message: "likeCreated!"});
+//     const [result] = await dataSource.query(`
+//         SELECT EXISTS(
+//             SELECT
+//             id
+//             FROM likes
+//             WHERE user_id = ? AND post_id = ?
+//         ) AS isLiked;
+//     `, [userId, postId]);
+
+//     if(!!parseInt(result.isLiked)) {
+//         // console.log(result.isLiked)
+//         await dataSource.query(`
+//         DELETE FROM likes
+//         WHERE user_id = ? AND post_id = ?;
+//         `, [userId, postId]);
+//         res.status(200).json({message: "deleteLiked!"});
+//     } else {
+//         await dataSource.query(`
+//             INSERT INTO likes(
+//                 user_id,
+//                 post_id
+//             ) VALUES (?, ?);
+//         `, [userId, postId]);
+//         res.status(200).json({message: "likeCreated!"});
+//     }
+
 // })
 
 // app.listen(port, () => {
