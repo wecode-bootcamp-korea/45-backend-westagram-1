@@ -98,10 +98,27 @@ const postUpdate = async (postId, content) => {
     }
 }
 
+const postDelete = async(userId, postId) => {
+    try {
+        return await dataSource.query(`
+            DELETE FROM posts as p
+            WHERE p.id = ?
+            AND p.user_id = ?;
+        `, [userId, postId]);        
+
+    } catch (err) {
+        console.log(err);
+        const error = new Error("DATA_NOT_FOUND");
+        error.statusCode = 500;
+        throw error;
+    }
+}
+
 
 module.exports = {
     addPost,
     posts,
     userPosts,
-    postUpdate
+    postUpdate,
+    postDelete
 }

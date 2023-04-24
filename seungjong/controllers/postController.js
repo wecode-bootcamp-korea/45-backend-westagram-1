@@ -46,7 +46,7 @@ const postUpdate = async(req, res) => {
         const {userId, postId} = req.params;
         const {content} = req.body;
 
-        console.log("1111111", postId, content);
+        // console.log("1111111", postId, content);
 
         if (!userId || !postId) {
             return res.status(400).json({message: "USER_POST_NOT_FOUND"});
@@ -59,11 +59,28 @@ const postUpdate = async(req, res) => {
     }
 }
 
+const postDelete = async(req, res) => {
+    try {
+        const {userId, postId} = req.params;
+
+        if(!userId || !postId) {
+            return res.status(400).json({message: "USER_POST_NOT_FOUND"});
+        }
+        await postService.postDelete(userId, postId)
+        return res.status(201).json({message: "POST_DELETE!"});
+
+    } catch (err) {
+        console.log(err);
+        return res.status(err.statusCode || 500).json({ message: err.message });
+    }
+}
+
 
 
 module.exports = {
     addPost,
     posts,
     userPosts,
-    postUpdate
+    postUpdate,
+    postDelete,
 }
