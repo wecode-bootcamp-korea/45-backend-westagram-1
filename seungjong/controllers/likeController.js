@@ -3,7 +3,6 @@ const likeService = require('../services/likeService');
 const like = async (req, res) => {
     try {
         const {userId, postId} = req.params;
-        console.log(`111111111:::::userId = ${userId}, postId = ${postId}`);
 
         if( !userId || !postId) {
             return res.status(400).json({message: "NOT_FOUND" });

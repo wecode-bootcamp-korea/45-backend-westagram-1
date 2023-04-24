@@ -2,7 +2,6 @@ const dataSource = require('./Dao');
 
 const like = async (userId, postId) => {
     try {
-        console.log(`333333333:::::userId = ${userId}, postId = ${postId}`);
         return await dataSource.query(`
             INSERT INTO likes(
                 user_id,

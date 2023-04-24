@@ -3,7 +3,6 @@ const postService = require('../services/postService');
 const addPost = async (req, res) => {
     try {
         const { title, content, imgUrl, userId } = req.body;
-        // console.log(title, content, imgUrl);
 
         if (!title || !userId) {
             return res.status(400).json({ message: "Key_Error" });
@@ -29,7 +28,6 @@ const posts = async (req, res) => {
 const userPosts = async(req, res) => {
     try {
         const {userId} = req.params;
-        // console.log("!!!!!!!!!!",userId);
         if (!userId) {
             return res.status(400).json({message: "USER_NOT_FOUND"});
         }
@@ -46,7 +44,6 @@ const postUpdate = async(req, res) => {
         const {userId, postId} = req.params;
         const {content} = req.body;
 
-        // console.log("1111111", postId, content);
 
         if (!userId || !postId) {
             return res.status(400).json({message: "USER_POST_NOT_FOUND"});

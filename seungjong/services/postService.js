@@ -25,7 +25,6 @@ const userPosts = async (userId) => {
 }
 
 const postUpdate = async (postId, content) => {
-    // console.log("22222222",postId, content);
     const postUpdate = await postDao.postUpdate(postId, content);
     return postUpdate;
 }
