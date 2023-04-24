@@ -69,7 +69,7 @@ app.post('/addPost', async (req, res, next) => {
 app.get('/posts', async (req, res, next) => {
     const { userId, userProfileImage, postingId, postinImageUrl, postingContent } = req.body;
 
-    await const posts = dataSource.query(`
+    const posts = await dataSource.query(`
         SELECT
         u.id,
         u.profile_image,
@@ -110,6 +110,62 @@ app.get('/users/:userId/posts', async (req, res, next) => {
     res.status(200).json({message: "성공", data: posts});
 
 });
+
+
+app.patch('/users/:userId/:postId', async (req, res, next) => {
+    const { userId, postId } = req.params;
+    const { userName, title, content } = req.body;
+
+    await dataSource.query(`    
+        UPDATE posts
+        SET
+        content = ?
+        WHERE id = ?     
+        `, [content, postId]
+        )
+    
+    const [result] = await dataSource.query(`
+        SELECT
+        u.id AS userId,
+        u.name AS userName,
+        p.id AS postingId,
+        p.title AS postingTitle,
+        p.content AS postingContent
+        FROM users as u
+        JOIN posts as p
+        ON u.id = p.user_id
+        WHERE p.id = ?;
+    `, [postId]);
+
+    res.status(200).json({ data: result});
+})
+
+
+app.delete('/users/:userId/posts/:postId', async(req, res, next) => {
+    const {userId, postId} = req.params;
+    await dataSource.query(`
+        DELETE FROM posts as p
+        WHERE p.id = ?
+        AND p.user_id = ?;
+    `, [postId, userId]);
+    res.status(204).send();
+});
+
+
+app.post('/likes/:userId/:postId', async(req, res, next) => {
+    const {userId, postId} = req.params;
+
+    await dataSource.query(`
+    INSERT into likes (
+        user_id,
+        post_id
+        )
+        VALUES (?, ?);
+    `,[userId, postId])
+    res.status(200).json({ message: "likeCreated!"});
+})
+
+
 
 
 
