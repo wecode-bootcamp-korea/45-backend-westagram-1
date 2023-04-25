@@ -35,7 +35,7 @@ const createUserPost = async (req, res) => {
             return res.status(400).json({ message: 'USER_POSTS_CANT_CREATED' });
         }
 
-        await postService.createPosts(userId, title, content, imageUrl, res);
+        await postService.createPosts(userId, title, content, imageUrl);
 
         return res.status(202).json({
             message: 'SUCCESSFULLY CREATED USER POST'
@@ -50,19 +50,14 @@ const createUserPost = async (req, res) => {
 
 const editUserPosts = async (req, res) => {
     try {
-        const userId = req.params.userId;
-        const postId = req.params.postId;
+        const { userId, postId } = req.params;
+
         const { title, content, imageUrl } = req.body;
 
         if (!userId || !postId || !title || !content) {
             return res.status(422).json({ message: 'USER_POSTS_CANT_UPDATED' });
         }
-
-        // const post = await postService.getPostById(postId);
         const post = await postService.getPostById(postId);
-        console.log(post)
-        console.log(typeof post.user_id, typeof userId)
-        console.log(post.user_id !== userId)
 
         if (!post || post.user_id !== parseInt(userId)) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -84,12 +79,8 @@ const editUserPosts = async (req, res) => {
 
 const deleteUserPosts = async (req, res) => {
     try {
-        const userId = req.params.userId;
-        const postId = req.params.postId;
+        const { userId, postId } = req.params;
 
-        // if (!postId) {
-        //   return res.status(422).json({ message: 'Invalid request' });
-        // }
         if (!postId || !userId) {
             return res.status(422).json({ message: 'USER_POSTS_CANT_DELETED' });
         }
