@@ -6,8 +6,6 @@ const {
 } = require('../utils/validation-check.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const saltRounds = process.env.SALT_ROUNDS;
-const jwtSecret = process.env.JWT_SECRET;
 
 const signUp = async (
   email,
@@ -20,6 +18,7 @@ const signUp = async (
   pwValidationCheck(password);
   emailValidationCheck(email);
 
+  const saltRounds = parseInt(process.env.SALT_ROUNDS);
   const makeHash = async (password, saltRounds) => {
     return await bcrypt.hash(password, saltRounds);
   };
@@ -63,9 +62,7 @@ const login = async (email, password) => {
   if (isEmailValid && isPwValid) {
     try {
       //토큰 발급
-      const payLoad = { id: userId };
-      const secretKey = jwtSecret;
-      const jwtToken = jwt.sign(payLoad, secretKey);
+      const jwtToken = jwt.sign({ id: userId }, process.env.JWT_SECRET);
 
       validornot = { accessToken: jwtToken };
     } catch (e) {
