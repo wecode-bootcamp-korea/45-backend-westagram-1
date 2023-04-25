@@ -1,4 +1,5 @@
 const userDao = require('../models/userDao')
+const { emailValidationCheck, pwValidationCheck } = require('../utils/validation-check')
 
 const getAllUsers = async () => {
     try {
@@ -11,22 +12,17 @@ const getAllUsers = async () => {
 }
 
 const signUp = async (name, email, password, profileImage) => {
-    const pwValidation = new RegExp(
-        '^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,20})'
-    );
-    if (!pwValidation.test(password)) {
-        const err = new Error('PASSWORD_IS_NOT_VALID');
-        err.statusCode = 409;
-        throw err;
-    }
-    const createUser = await userDao.createUser(
-        name,
-        email,
-        password,
-        profileImage
-    );
+    try {
+        emailValidationCheck(email);
+        pwValidationCheck(password);
 
-    return createUser;
+        const createUser = await userDao.createUser(name, email, password, profileImage);
+
+        return createUser;
+    } catch (err) {
+        console.log(err);
+        throw new Error('Error occurred in sign-up /userService');
+    }
 };
 
 
