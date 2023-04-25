@@ -1,25 +1,28 @@
-const dataSource = require("./Dao");
+const dataSource = require("./dataSource");
 
 const addPost = async (title, content, imgUrl, userId) => {
-    try {
-        return await dataSource.query(`
+  try {
+    return await dataSource.query(
+      `
                 INSERT INTO posts(
                     title,
                     content,
                     image_url,
                     user_id
                 ) VALUES (?, ?, ?, ?);
-            `, [title, content, imgUrl, userId]);
-    } catch (err) {
-        const error = new Error('INVALID_DATA_INPUT');
-        error.statusCode = 500;
-        throw error;
-    }
+            `,
+      [title, content, imgUrl, userId]
+    );
+  } catch (err) {
+    const error = new Error("INVALID_DATA_INPUT");
+    error.statusCode = 500;
+    throw error;
+  }
 };
 
 const posts = async () => {
-    try {
-        return await dataSource.query(`
+  try {
+    return await dataSource.query(`
                 SELECT
                 u.id AS userId,
                 u.profile_image AS userProfileImage,
@@ -30,16 +33,17 @@ const posts = async () => {
                 INNER JOIN users as u
                 ON u.id = p.user_id;
             `);
-    } catch (err) {
-        const error = new Error(`DATA_NOT_FOUND`);
-        error.statusCode = 500;
-        throw error;
-    }
-}
+  } catch (err) {
+    const error = new Error(`DATA_NOT_FOUND`);
+    error.statusCode = 500;
+    throw error;
+  }
+};
 
 const userPosts = async (userId) => {
-    try {
-        return await dataSource.query(`
+  try {
+    return await dataSource.query(
+      `
                 SELECT
                     users.id as userId,
                     users.profile_image as userProfileImage,
@@ -58,26 +62,31 @@ const userPosts = async (userId) => {
                     ) as postings
                     FROM users
                     WHERE users.id = ?;
-            `, [userId, userId]
-        )
-    } catch (err) {
-        const error = new Error("DATA_NOT_FOUND");
-        error.statusCode = 500;
-        throw error;
-    }
-}
+            `,
+      [userId, userId]
+    );
+  } catch (err) {
+    const error = new Error("DATA_NOT_FOUND");
+    error.statusCode = 500;
+    throw error;
+  }
+};
 
 const postUpdate = async (postId, content) => {
-    console.log("33333333333333", postId, content);
-    try {
-        await dataSource.query(`
+  console.log("33333333333333", postId, content);
+  try {
+    await dataSource.query(
+      `
             UPDATE posts
             SET
             content = ?
             WHERE id = ?;
-        `, [content, postId])
-        
-        const [result] = await dataSource.query(`
+        `,
+      [content, postId]
+    );
+
+    const [result] = await dataSource.query(
+      `
             SELECT
             u.id AS userId,
             u.name AS userName,
@@ -88,37 +97,40 @@ const postUpdate = async (postId, content) => {
             JOIN posts AS p
             ON u.id = p.user_id
             WHERE p.id = ?;
-        `,[postId]);
-        return result
-    } catch (err) {
-        console.log(err);
-        const error = new Error("DATA_NOT_FOUND");
-        error.statusCode = 500;
-        throw error;
-    }
-}
+        `,
+      [postId]
+    );
+    return result;
+  } catch (err) {
+    console.log(err);
+    const error = new Error("DATA_NOT_FOUND");
+    error.statusCode = 500;
+    throw error;
+  }
+};
 
-const postDelete = async(userId, postId) => {
-    try {
-        return await dataSource.query(`
+const postDelete = async (userId, postId) => {
+  try {
+    return await dataSource.query(
+      `
             DELETE FROM posts as p
             WHERE p.id = ?
             AND p.user_id = ?;
-        `, [userId, postId]);        
-
-    } catch (err) {
-        console.log(err);
-        const error = new Error("DATA_NOT_FOUND");
-        error.statusCode = 500;
-        throw error;
-    }
-}
-
+        `,
+      [userId, postId]
+    );
+  } catch (err) {
+    console.log(err);
+    const error = new Error("DATA_NOT_FOUND");
+    error.statusCode = 500;
+    throw error;
+  }
+};
 
 module.exports = {
-    addPost,
-    posts,
-    userPosts,
-    postUpdate,
-    postDelete
-}
+  addPost,
+  posts,
+  userPosts,
+  postUpdate,
+  postDelete,
+};

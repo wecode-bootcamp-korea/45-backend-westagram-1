@@ -1,24 +1,19 @@
 // services/userService.js
+const userDao = require("../models/userDao");
 
-const userDao = require('../models/userDao');
+const { passwordValidationCheck } = require("../utils/validationCheck");
+
 const signUp = async (name, email, password, profileImg) => {
-    // password validation using REGEX
-    const pwValidation = new RegExp(
-        '^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,20})'
-    );
-    if (!pwValidation.test(password)) {
-        const err = new Error('PASSWORD_IS_NOT_VALID');
-        err.statusCode = 409;
-        throw err;
-    }
-    const createUser = await userDao.createUser(
-        name,
-        email,
-        password,
-        profileImg
-    );
+  await passwordValidationCheck(password);
 
-    return createUser;
+  const createUser = await userDao.createUser(
+    name,
+    email,
+    password,
+    profileImg
+  );
+
+  return createUser;
 };
 
-module.exports = {signUp};
+module.exports = { signUp };
