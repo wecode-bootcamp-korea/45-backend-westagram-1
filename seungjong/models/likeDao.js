@@ -1,8 +1,6 @@
-const { post } = require("../routes");
-const dataSource = require("./Dao");
+const dataSource = require("./dataSource");
 
 const like = async (userId, postId) => {
-  console.log(`3333333333:::userId::${userId},postId:::${postId}`);
   try {
     const [result] = await dataSource.query(
       `
