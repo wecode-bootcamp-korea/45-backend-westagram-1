@@ -2,20 +2,12 @@
 const userDao = require("../models/userDao");
 const bcrypt = require("bcrypt");
 
-const password = "password";
-const saltRounds = 12;
+const jwt = require("jsonwebtoken");
 
-const makeHash = async (password, saltRounds) => {
-  return await bcrypt.hash(password, saltRounds);
-};
-
-const checkHash = async (password, hashedPassword) => {
-  return await bcrypt.compare(password, hashedPassword); // (1)
-};
+const secretKey = process.env.SECRETKEY;
 
 const signUp = async (name, email, password, profileImg) => {
-  const hashedPassword = await makeHash(password, 12);
-  const result = await checkHash(password, hashedPassword);
+  const hashedPassword = await bcrypt.hash(password, 12);
   console.log(`1111111111`, hashedPassword);
 
   const createUser = await userDao.createUser(
@@ -28,4 +20,28 @@ const signUp = async (name, email, password, profileImg) => {
   return createUser;
 };
 
-module.exports = { signUp };
+const checkHash = async (password, hashedPassword) => {
+  return await bcrypt.compare(password, hashedPassword);
+};
+
+const logIn = async (email, password) => {
+  const [login] = await userDao.logIn(email);
+  const hashed = login.password;
+  // console.log(login.password);
+  // console.log(hashed);
+  const result = await checkHash(password, hashed);
+  // console.log(result);
+
+  if (!result) {
+    const error = new Error("Invalid User");
+    error.statusCode = 400;
+    throw error;
+  }
+  const payLoad = { userId: login.id };
+  return jwt.sign(payLoad, secretKey);
+};
+
+module.exports = {
+  signUp,
+  logIn,
+};

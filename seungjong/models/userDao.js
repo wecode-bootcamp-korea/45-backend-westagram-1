@@ -20,6 +20,26 @@ const createUser = async (name, email, password, profileImg) => {
   }
 };
 
+const logIn = async (email) => {
+  console.log(`dao`, email);
+  try {
+    return await dataSource.query(
+      `SELECT
+      id,
+      password
+      FROM users
+      WHERE email = ?;
+      `,
+      [email]
+    );
+  } catch (err) {
+    const error = new Error("DATA_NOT_FOUND");
+    error.statusCode = 500;
+    throw error;
+  }
+};
+
 module.exports = {
   createUser,
+  logIn,
 };
