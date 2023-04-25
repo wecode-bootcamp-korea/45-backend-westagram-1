@@ -10,6 +10,23 @@ const getAllUsers = async (req, res) => {
     }
 }
 
+// const signIn = async (req, res) => {
+//     try {
+//         const checkHash = async (password, hashedPassword) => {
+//             return await bcrypt.compare(password, hashedPassword)
+//         }
+
+//         const main = async () => {
+//             const hashedPassword = await makeHash("password", 12);
+//             const result = await checkHash("password", hashedPassword);
+//             console.log(result);
+//         }
+
+//     } catch (err) {
+//         console.log(err)
+//     }
+// }
+
 const signUp = async (req, res) => {
     try {
         const { name, email, password } = req.body;

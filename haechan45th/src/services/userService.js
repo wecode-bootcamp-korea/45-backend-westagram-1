@@ -1,4 +1,6 @@
 const userDao = require('../models/userDao')
+const bcrypt = require("bcrypt");
+const saltRounds = 12
 const { emailValidationCheck, pwValidationCheck } = require('../utils/validation-check')
 
 const getAllUsers = async () => {
@@ -7,7 +9,7 @@ const getAllUsers = async () => {
         return users;
     } catch (err) {
         console.log(err);
-        throw new Error("Error occured in getting All Users /userService");
+        throw new Error("Error in getting All Users /userService");
     }
 }
 
@@ -16,7 +18,13 @@ const signUp = async (name, email, password, profileImage) => {
         emailValidationCheck(email);
         pwValidationCheck(password);
 
-        const createUser = await userDao.createUser(name, email, password, profileImage);
+        const makeHash = async (password, saltRounds) => {
+            return await bcrypt.hash(password, saltRounds);
+        }
+
+        const hashedPassword = await makeHash(password, saltRounds);
+
+        const createUser = await userDao.createUser(name, email, hashedPassword, profileImage);
 
         return createUser;
     } catch (err) {
