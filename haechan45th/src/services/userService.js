@@ -1,6 +1,8 @@
 const userDao = require('../models/userDao')
 const bcrypt = require("bcrypt");
-const saltRounds = 12
+const saltRounds = 12;
+const config = process.env;
+const jwt = require('jsonwebtoken');
 const { emailValidationCheck, pwValidationCheck } = require('../utils/validation-check')
 
 const getAllUsers = async () => {
@@ -33,7 +35,23 @@ const signUp = async (name, email, password, profileImage) => {
     }
 };
 
+const signIn = async (email, password) => {
+    try {
+        const user = await userDao.getUserByEmail(email);
+        if (!user || !await bcrypt.compare(password, user.password)) {
+            throw new Error('KEY_ERROR');
+        }
+        const token = jwt.sign({ email: user.email }, config.JWT_SECRET_KEY, { expiresIn: "1h" });
+        return {
+            token,
+            user
+        };
+    } catch (err) {
+        console.log(err);
+        throw new Error('signIn Failed /userService');
+    }
+}
 
 module.exports = {
-    signUp, getAllUsers
+    signUp, getAllUsers, signIn
 }

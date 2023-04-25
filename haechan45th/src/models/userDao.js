@@ -16,7 +16,7 @@ const getAllUsers = async () => {
         return rows;
     } catch (err) {
         console.log(err);
-        throw new Error("Error occured in getting Userdatas / userDAO")
+        throw new Error("Error in getting getAllUsers / userDAO")
     }
 }
 
@@ -33,6 +33,20 @@ const getUserId = async (userId) => {
         throw new Error("Error has occurred with getUserID /userDAO");
     }
 };
+
+const getUserByEmail = async (email) => {
+    try {
+        const [getUserByEmail] = await dataSource.query(
+            `SELECT * FROM users 
+            WHERE users.email = ?`,
+            [email]
+        )
+        return getUserByEmail;
+    } catch (err) {
+        console.log(err);
+        throw new Error('Error occurred in getUserByEmail /userDao');
+    }
+}
 
 
 const createUser = async (name, email, password, profileImage) => {
@@ -58,5 +72,5 @@ const createUser = async (name, email, password, profileImage) => {
 
 
 module.exports = {
-    createUser, getUserId, getAllUsers
+    createUser, getUserId, getAllUsers, getUserByEmail
 }

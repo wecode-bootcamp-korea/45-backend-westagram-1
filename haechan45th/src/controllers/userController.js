@@ -10,22 +10,29 @@ const getAllUsers = async (req, res) => {
     }
 }
 
-// const signIn = async (req, res) => {
-//     try {
-//         const checkHash = async (password, hashedPassword) => {
-//             return await bcrypt.compare(password, hashedPassword)
-//         }
+const signIn = async (req, res) => {
+    try {
+        const { email, password } = req.body;
 
-//         const main = async () => {
-//             const hashedPassword = await makeHash("password", 12);
-//             const result = await checkHash("password", hashedPassword);
-//             console.log(result);
-//         }
+        if (!email || !password) {
+            return res.status(400).json({ message: 'KEY_ERROR' });
+        }
 
-//     } catch (err) {
-//         console.log(err)
-//     }
-// }
+        const { token, user } = await userService.signIn(email, password);
+        res.cookie('user', token, { httpOnly: true, sameSite: 'none', secure: true });
+
+        return res.status(200).json({
+            message: 'SIGNIN_SUCCESS',
+            token,
+            user
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(err.statusCode || 500).json({
+            message: err.message
+        });
+    }
+};
 
 const signUp = async (req, res) => {
     try {
@@ -50,5 +57,5 @@ const signUp = async (req, res) => {
 
 
 module.exports = {
-    signUp, getAllUsers
+    signUp, getAllUsers, signIn
 }
