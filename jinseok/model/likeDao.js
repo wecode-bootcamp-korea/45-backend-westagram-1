@@ -1,3 +1,5 @@
+const { dataSource } = require('./dataSource');
+
 const createLike = async (userId, postId) => {
   try {
     return dataSource.query(
@@ -18,13 +20,18 @@ const createLike = async (userId, postId) => {
 
 const getLike = async (userId, postId) => {
   try {
-    return await dataSource.query(
+    const [result] = await dataSource.query(
       `
-      SELECT user_id, posts_id 
+      SELECT EXISTS (
+        SELECT
+        id
         FROM likes 
-        WHERE user_id = ? AND posts_id = ?`,
+        WHERE user_id = ? AND posts_id = ?
+    ) isLiked
+    `,
       [userId, postId]
     );
+    return !!parseInt(result.isLiked);
   } catch (e) {
     console.log(e);
     res.status(400).json({ message: 'error' });

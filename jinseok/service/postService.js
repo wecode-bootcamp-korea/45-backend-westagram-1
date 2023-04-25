@@ -1,23 +1,23 @@
 const postDao = require('../model/postDao');
 
-const createPost = async (context, userId) => {
-  return await postDao.createPost(context, userId);
+const createPost = (context, userId) => {
+  return postDao.createPost(context, userId);
 };
 
-const getAllPosts = async () => {
-  return await postDao.getAllPosts();
+const getAllPosts = () => {
+  return postDao.getAllPosts();
 };
 
-const getSpecificPost = async (userId) => {
-  return await postDao.getSpecificPost(userId);
+const getSpecificPost = (userId) => {
+  return postDao.getSpecificPost(userId);
 };
 
-const updatePost = async (update, userId, postId) => {
-  return await postDao.updatePost(update, userId, postId);
+const updatePost = (update, userId, postId) => {
+  return postDao.updatePost(update, userId, postId);
 };
 
-const deletePost = async (userId, postId) => {
-  return await postDao.deletePost(userId, postId);
+const deletePost = (userId, postId) => {
+  return postDao.deletePost(userId, postId);
 };
 
 module.exports = {

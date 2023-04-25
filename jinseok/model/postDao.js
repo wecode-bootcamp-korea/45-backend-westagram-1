@@ -1,3 +1,5 @@
+const { dataSource } = require('./dataSource');
+
 const createPost = async (context, userId) => {
   try {
     return await dataSource.query(
