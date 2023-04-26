@@ -1,8 +1,9 @@
 // services/userService.js
-const userDao = require("../models/userDao");
 const bcrypt = require("bcrypt");
-const { passwordValidationCheck } = require("../utils/validationCheck");
 const jwt = require("jsonwebtoken");
+const userDao = require("../models/userDao");
+const { passwordValidationCheck } = require("../utils/validationCheck");
+const { authorization } = require("../utils/authorization");
 
 const signUp = async (name, email, password, profileImg) => {
   await passwordValidationCheck(password);

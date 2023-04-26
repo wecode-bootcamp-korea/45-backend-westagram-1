@@ -20,7 +20,6 @@ const createUser = async (name, email, password, profileImg) => {
 };
 
 const getUserByEmail = async (email) => {
-  console.log(`333333333`, email);
   try {
     return await dataSource.query(
       `SELECT
