@@ -19,8 +19,8 @@ const createUser = async (
       `,
       [email, profileImage, password, name, age, phoneNumber]
     );
-  } catch (err) {
-    console.log(err);
+  } catch (e) {
+    console.log(e);
     const error = new Error('INVALID_DATA_INPUT');
     error.statusCode = 500;
     throw error;
@@ -43,23 +43,49 @@ const isExistedUser = async (email) => {
     return parseInt(result.idExists);
   } catch (e) {
     console.log(e);
-    res.status(400).json({ message: 'error' });
+    const error = new Error('INVALID_DATA_INPUT');
+    error.statusCode = 500;
+    throw error;
   }
 };
 
 const getUser = async (email) => {
   try {
-    const data = await dataSource.query(
-      `SELECT 
+    const [user] = await dataSource.query(
+      `
+      SELECT 
       id, email, profile_image, password, name, age, phone_number
         FROM users
-        WHERE email = ? `,
+        WHERE email = ? 
+        `,
       [email]
     );
-    return data;
+    return user;
   } catch (e) {
     console.log(e);
-    res.status(400).json({ message: 'error' });
+    const error = new Error('INVALID_DATA_INPUT');
+    error.statusCode = 500;
+    throw error;
+  }
+};
+
+const getUserById = async (id) => {
+  try {
+    const [user] = await dataSource.query(
+      `
+      SELECT 
+      id, email, profile_image, password, name, age, phone_number
+        FROM users
+        WHERE id = ? 
+        `,
+      [id]
+    );
+    return user;
+  } catch (e) {
+    console.log(e);
+    const error = new Error('INVALID_DATA_INPUT');
+    error.statusCode = 500;
+    throw error;
   }
 };
 
@@ -67,4 +93,5 @@ module.exports = {
   createUser,
   isExistedUser,
   getUser,
+  getUserById,
 };
