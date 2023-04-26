@@ -27,10 +27,7 @@ const checkHash = async (password, hashedPassword) => {
 const logIn = async (email, password) => {
   const [login] = await userDao.logIn(email);
   const hashed = login.password;
-  // console.log(login.password);
-  // console.log(hashed);
   const result = await checkHash(password, hashed);
-  // console.log(result);
 
   if (!result) {
     const error = new Error("Invalid User");
