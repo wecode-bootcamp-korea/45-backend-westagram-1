@@ -37,7 +37,7 @@ const signUp = async (
 const login = async (email, password) => {
   await emailValidationCheck(email);
 
-  const user = await userDao.getUser(email);
+  const user = await userDao.getUserByEmail(email);
 
   if (!user || !bcrypt.compare(password, user.password)) {
     throw new Error('INVALID_EMAIL_OR_PASSWORD');

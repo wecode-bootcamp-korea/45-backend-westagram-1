@@ -40,7 +40,7 @@ const isExistedUser = async (email) => {
     `,
       [email]
     );
-    return parseInt(result.idExists);
+    return !!parseInt(result.idExists);
   } catch (e) {
     console.log(e);
     const error = new Error('INVALID_DATA_INPUT');
@@ -49,7 +49,7 @@ const isExistedUser = async (email) => {
   }
 };
 
-const getUser = async (email) => {
+const getUserByEmail = async (email) => {
   try {
     const [user] = await dataSource.query(
       `
@@ -92,6 +92,6 @@ const getUserById = async (id) => {
 module.exports = {
   createUser,
   isExistedUser,
-  getUser,
+  getUserByEmail,
   getUserById,
 };
