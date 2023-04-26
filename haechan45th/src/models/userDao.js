@@ -37,8 +37,10 @@ const getUserId = async (userId) => {
 const getUserByEmail = async (email) => {
     try {
         const [getUserByEmail] = await dataSource.query(
-            `SELECT users.email FROM users 
-            WHERE users.email = ?`,
+            `SELECT users.id, users.email, users.password
+            FROM users
+            WHERE users.email = ?
+            `,
             [email]
         )
         return getUserByEmail;
@@ -47,6 +49,7 @@ const getUserByEmail = async (email) => {
         throw new Error('Error occurred in getUserByEmail /userDao');
     }
 }
+
 
 
 const createUser = async (name, email, password, profileImage) => {
