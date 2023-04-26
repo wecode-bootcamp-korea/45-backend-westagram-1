@@ -1,174 +1,40 @@
-require('dotenv').config();
+require("dotenv").config();
+
+const express = require("express");
 const cors = require("cors");
-const logger = require("morgan");
-const express = require('express');
-const { DataSource } = require("typeorm");
+const morgan = require("morgan");
+
+const routes = require("./routes");
 const app = express();
-const port = process.env.PORT;
+const dataSource = require("./models/dataSource");
 
 app.use(cors());
-app.use(logger("combined"));
+app.use(morgan("combined"));
 app.use(express.json());
+app.use(routes);
 
-const dataSource = new DataSource({
-    type: process.env.DB_CONNECTION,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    logging: process.env.DB_LOGGING
-})
+dataSource
+  .initialize()
+  .then(() => {
+    console.log("Data Source has been initalized!");
+  })
+  .catch((err) => {
+    console.log("Error occured during Data Source initializtion!", err);
+    dataSource.destroy();
+  });
 
-dataSource.initialize()
-    .then(() => {
-        console.log("Data Source has benn initializd!")
-    })
-    .catch(() => {
-        console.log("Fail!!")
-    })
-
-app.get('/', (req, res, next) => {
-    res.status(200).json({ message: "Hello World!!" });
-})
-
-app.get('/ping', (req, res, next) => {
-    res.status(200).json({ message: "pong!!" });
+app.get("/ping", (req, res) => {
+  res.json({ message: "pong!" });
 });
 
-app.post('/signUp', async (req, res, next) => {
-    const { name, email, password, prfileImage } = req.body;
+const port = process.env.PORT;
 
-    await dataSource.query(
-        `INSERT INTO users(
-            name,
-            email,
-            password,
-            profile_image
-        ) VALUES (?, ?, ?, ?);
-        `,
-        [name, email, password, prfileImage]
-    );
-    res.status(200).json({ message: "sucessfully created!" });
-})
+const start = async () => {
+  try {
+    app.listen(port, () => console.log(`Server is listening on ${port}`));
+  } catch (err) {
+    console.log(err);
+  }
+};
 
-app.post('/addPost', async (req, res, next) => {
-    const { title, content, userId } = req.body;
-
-    await dataSource.query(
-        `INSERT INTO posts (
-            title,
-            content,
-            user_id)
-            VALUES (?, ?, ?);
-            `, [title, content, userId]
-    );
-    res.status(201).json({ message: "postCreated!" });
-});
-
-app.get('/posts', async (req, res, next) => {
-    const { userId, userProfileImage, postingId, postinImageUrl, postingContent } = req.body;
-
-    const posts = await dataSource.query(`
-        SELECT
-        u.id,
-        u.profile_image,
-        p.user_id,
-        p.image_url,
-        p.content
-        FROM
-        users as u
-        INNER JOIN posts as p
-        ON u.id = p.user_id
-        ;
-        `);
-        res.status(200).json({data: posts});  
-})
-
-app.get('/users/:userId/posts', async (req, res, next) => {
-    const { userId } = req.params;
-    const posts = await dataSource.query(
-        `SELECT
-            users.id as userId,
-            users.profile_image as userProfileImage,
-            (
-                SELECT
-                JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        "postingId", posts.id,
-                        "postingImageUrl", posts.image_url,
-                        "postingContent", posts.content
-                    )
-                )
-                FROM posts
-                JOIN users ON users.id = posts.user_id
-                WHERE posts.user_id = ?
-            ) as postings
-            FROM users
-            WHERE users.id = ?;`, [userId, userId]
-    )
-    res.status(200).json({message: "성공", data: posts});
-
-});
-
-
-app.patch('/users/:userId/:postId', async (req, res, next) => {
-    const { userId, postId } = req.params;
-    const { userName, title, content } = req.body;
-
-    await dataSource.query(`    
-        UPDATE posts
-        SET
-        content = ?
-        WHERE id = ?     
-        `, [content, postId]
-        )
-    
-    const [result] = await dataSource.query(`
-        SELECT
-        u.id AS userId,
-        u.name AS userName,
-        p.id AS postingId,
-        p.title AS postingTitle,
-        p.content AS postingContent
-        FROM users as u
-        JOIN posts as p
-        ON u.id = p.user_id
-        WHERE p.id = ?;
-    `, [postId]);
-
-    res.status(200).json({ data: result});
-})
-
-
-app.delete('/users/:userId/posts/:postId', async(req, res, next) => {
-    const {userId, postId} = req.params;
-    await dataSource.query(`
-        DELETE FROM posts as p
-        WHERE p.id = ?
-        AND p.user_id = ?;
-    `, [postId, userId]);
-    res.status(204).send();
-});
-
-
-app.post('/likes/:userId/:postId', async(req, res, next) => {
-    const {userId, postId} = req.params;
-
-    await dataSource.query(`
-    INSERT into likes (
-        user_id,
-        post_id
-        )
-        VALUES (?, ?);
-    `,[userId, postId])
-    res.status(200).json({ message: "likeCreated!"});
-})
-
-
-
-
-
-app.listen(port, () => {
-    console.log(`Sever listiening on ${port}`);
-});
+start();
