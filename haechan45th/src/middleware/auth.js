@@ -10,10 +10,8 @@ const validateToken = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        console.log(decoded);
 
         const user = await userService.getUserId(decoded.id)
-        console.log(user);
 
         if (!user) {
             const error = new Error('USER_DOES_NOT_EXIST')

@@ -23,7 +23,7 @@ const getAllUsers = async () => {
 const getUserId = async (userId) => {
     try {
         const [getUserId] = await dataSource.query(
-            `SELECT * FROM users 
+            `SELECT users.id FROM users 
         WHERE users.id = ?`,
             [userId]
         )
@@ -37,7 +37,7 @@ const getUserId = async (userId) => {
 const getUserByEmail = async (email) => {
     try {
         const [getUserByEmail] = await dataSource.query(
-            `SELECT * FROM users 
+            `SELECT users.email FROM users 
             WHERE users.email = ?`,
             [email]
         )

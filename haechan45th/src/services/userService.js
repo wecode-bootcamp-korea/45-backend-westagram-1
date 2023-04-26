@@ -32,9 +32,7 @@ const signUp = async (name, email, password, profileImage) => {
 
         const saltRounds = 12;
 
-        const hashedPassword = await (async () => {
-            return await bcrypt.hash(password, saltRounds);
-        })();
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         const createUser = await userDao.createUser(name, email, hashedPassword, profileImage);
 
