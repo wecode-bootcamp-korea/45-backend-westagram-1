@@ -1,7 +1,6 @@
 const dataSource = require("./dataSource");
 
 const createUser = async (name, email, password, profileImg) => {
-  console.log(name, email, password, profileImg);
   try {
     return await dataSource.query(
       `INSERT INTO users(
@@ -20,8 +19,8 @@ const createUser = async (name, email, password, profileImg) => {
   }
 };
 
-const logIn = async (email) => {
-  console.log(`dao`, email);
+const getUserByEmail = async (email) => {
+  console.log(`333333333`, email);
   try {
     return await dataSource.query(
       `SELECT
@@ -41,5 +40,5 @@ const logIn = async (email) => {
 
 module.exports = {
   createUser,
-  logIn,
+  getUserByEmail,
 };
