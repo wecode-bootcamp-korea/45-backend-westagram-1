@@ -24,7 +24,7 @@ const getUserId = async (userId) => {
     try {
         const [getUserId] = await dataSource.query(
             `SELECT * FROM users 
-      WHERE users.id = ?`,
+        WHERE users.id = ?`,
             [userId]
         )
         return getUserId;

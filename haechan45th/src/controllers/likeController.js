@@ -2,7 +2,8 @@ const likeService = require('../services/likeService');
 
 const createLike = async (req, res) => {
     try {
-        const { userId, postId } = req.body;
+        const userId = req.user.id;
+        const { postId } = req.body;
 
         if (!userId || !postId) {
             return res.status(400).json({ message: "Cannot Process the Like" });

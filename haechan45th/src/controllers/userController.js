@@ -18,13 +18,11 @@ const signIn = async (req, res) => {
             return res.status(400).json({ message: 'KEY_ERROR' });
         }
 
-        const { token, user } = await userService.signIn(email, password);
-        res.cookie('user', token, { httpOnly: true, sameSite: 'none', secure: true });
+        const accessToken = await userService.signIn(email, password);
 
         return res.status(200).json({
             message: 'SIGNIN_SUCCESS',
-            token,
-            user
+            accessToken
         });
     } catch (err) {
         console.log(err);
