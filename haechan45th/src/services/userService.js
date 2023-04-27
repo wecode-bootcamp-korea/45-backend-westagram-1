@@ -1,4 +1,8 @@
+const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+
 const userDao = require('../models/userDao')
+
 const { emailValidationCheck, pwValidationCheck } = require('../utils/validation-check')
 
 const getAllUsers = async () => {
@@ -7,16 +11,30 @@ const getAllUsers = async () => {
         return users;
     } catch (err) {
         console.log(err);
-        throw new Error("Error occured in getting All Users /userService");
+        throw new Error("Error in getting All Users /userService");
+    }
+}
+
+const getUserId = async (userId) => {
+    try {
+        const users = await userDao.getUserId(userId);
+        return users;
+    } catch (err) {
+        console.log(err);
+        throw new Error("Error in getting All Users /userService");
     }
 }
 
 const signUp = async (name, email, password, profileImage) => {
     try {
-        emailValidationCheck(email);
-        pwValidationCheck(password);
+        await emailValidationCheck(email);
+        await pwValidationCheck(password);
 
-        const createUser = await userDao.createUser(name, email, password, profileImage);
+        const saltRounds = 12;
+
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        const createUser = await userDao.createUser(name, email, hashedPassword, profileImage);
 
         return createUser;
     } catch (err) {
@@ -25,7 +43,21 @@ const signUp = async (name, email, password, profileImage) => {
     }
 };
 
+const signIn = async (email, password) => {
+    try {
+        const user = await userDao.getUserByEmail(email);
+        if (!user || !await bcrypt.compare(password, user.password)) {
+            throw new Error('INVALID_EMAIL_OR_PASSWORD');
+        }
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
+        return token
+
+    } catch (err) {
+        console.log(err);
+        throw new Error('signIn Failed /userService');
+    }
+}
 
 module.exports = {
-    signUp, getAllUsers
+    signUp, getAllUsers, signIn, getUserId
 }

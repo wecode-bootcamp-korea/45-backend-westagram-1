@@ -12,7 +12,7 @@ const getAllPost = async (req, res) => {
 
 const getSpecificUserPost = async (req, res) => {
     try {
-        const userId = req.params.userId;
+        const userId = req.user.id;
         if (!userId) {
             return res.status(400).json({ message: 'USER_POSTS_NOT_FOUND' });
         }
@@ -28,7 +28,7 @@ const getSpecificUserPost = async (req, res) => {
 
 const createUserPost = async (req, res) => {
     try {
-        const userId = req.params.userId;
+        const userId = req.user.id;
         const { title, content, imageUrl } = req.body;
 
         if (!userId || !title || !content) {
@@ -50,7 +50,8 @@ const createUserPost = async (req, res) => {
 
 const editUserPosts = async (req, res) => {
     try {
-        const { userId, postId } = req.params;
+        const userId = req.user.id;
+        const { postId } = req.params;
 
         const { title, content, imageUrl } = req.body;
 
@@ -79,7 +80,8 @@ const editUserPosts = async (req, res) => {
 
 const deleteUserPosts = async (req, res) => {
     try {
-        const { userId, postId } = req.params;
+        const userId = req.user.id;
+        const { postId } = req.params;
 
         if (!postId || !userId) {
             return res.status(422).json({ message: 'USER_POSTS_CANT_DELETED' });

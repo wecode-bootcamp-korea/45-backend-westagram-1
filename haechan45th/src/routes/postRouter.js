@@ -1,15 +1,15 @@
 const express = require('express');
 const postController = require('../controllers/postController');
+const { validateToken } = require('../middleware/auth');
 
-const validateToken = require("../middlewares/auth");
 
 const router = express.Router();
 
-router.get('', postController.getAllPost);
-router.get('/:userId', validateToken, postController.getSpecificUserPost);
-router.post('/:userId', validateToken, postController.createUserPost);
-router.post('/:userId/:postId', validateToken, postController.editUserPosts);
-router.delete('/:userId/:postId', validateToken, postController.deleteUserPosts);
+router.get('/all', postController.getAllPost);
+router.get('', validateToken, postController.getSpecificUserPost);
+router.post('', validateToken, postController.createUserPost);
+router.post('/:postId', validateToken, postController.editUserPosts);
+router.delete('/:postId', validateToken, postController.deleteUserPosts);
 
 module.exports = {
     router

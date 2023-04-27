@@ -49,7 +49,7 @@ const getSpecificUserPost = async (userId) => {
 const getPostById = async (postId) => {
     try {
         const [getPostById] = await dataSource.query(
-            `SELECT * FROM posts 
+            `SELECT posts.user_id FROM posts 
        JOIN users ON users.id = posts.user_id
        WHERE posts.id = ?`,
             [postId]

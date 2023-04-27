@@ -6,8 +6,6 @@ const likeRouter = require("./likeRouter");
 
 const router = express.Router();
 
-router.use(validateToken);
-
 router.use("/users", userRouter.router);
 router.use("/posts", postRouter.router);
 router.use("/likes", likeRouter.router);
