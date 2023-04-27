@@ -8,7 +8,6 @@ const passwordValidationCheck = async (password) => {
     err.statusCode = 409;
     throw err;
   }
-
   return pwValidation;
 };
 
