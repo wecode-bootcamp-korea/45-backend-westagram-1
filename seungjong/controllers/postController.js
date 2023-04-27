@@ -4,6 +4,7 @@ const addPost = async (req, res, next) => {
   try {
     const { title, content, imgUrl } = req.body;
     const userId = req.userId;
+    const result = await postService.addPost(title, content, imgUrl, userId);
 
     if (!title) {
       return res.status(400).json({ message: "Key_Error" });

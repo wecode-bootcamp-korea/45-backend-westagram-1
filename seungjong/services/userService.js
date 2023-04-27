@@ -28,7 +28,18 @@ const logIn = async (email, password) => {
   return jwt.sign({ userId: user.id }, process.env.SECRETKEY);
 };
 
+const getUserById = async (userId) => {
+  try {
+    const [user] = await userDao.getUserById(userId);
+    return user;
+  } catch (err) {
+    console.log(err);
+    throw new Error("Invalid User");
+  }
+};
+
 module.exports = {
   signUp,
   logIn,
+  getUserById,
 };
